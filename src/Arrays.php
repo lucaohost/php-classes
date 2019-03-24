@@ -48,6 +48,11 @@ class Arrays implements \Iterator
         return count($this->array);
     }
 
+    public function getArray(): array
+    {
+        return $this->array;
+    }
+
     public function getFirst()
     {
         return $this->array[0] ?? null;

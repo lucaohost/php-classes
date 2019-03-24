@@ -1,0 +1,25 @@
+{
+    "name": "lopesrichard/php-classes",
+    "description": "Making php more object oriented.",
+    "keywords": ["object oriented", "classes", "composer", "php"],
+    "license": "MIT",
+    "homepage": "https://github.com/lopesrichard/php-classes",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Richard Lopes",
+            "email": "contato.richardlopes@outlook.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PHPClass\\": [
+                "src/",
+                "tests/"
+            ]
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
+}
