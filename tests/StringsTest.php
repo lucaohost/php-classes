@@ -16,14 +16,14 @@ class StringsTest extends TestCase
     {
         $this->strings->replace(' ', '');
         $expect = 'Loremipsumdolorsitamet,consecteturadipiscingelit';
-        self::assertEquals($expect, $this->strings);
+        self::assertEquals($expect, $this->strings->getString());
     }
 
     public function test_replace_with_regex()
     {
-        $this->strings->replace(' ', '');
+        $this->strings->replace('/\s/', '', true);
         $expect = 'Loremipsumdolorsitamet,consecteturadipiscingelit';
-        self::assertEquals($expect, $this->strings);
+        self::assertEquals($expect, $this->strings->getString());
     }
 
     public function test_split_should_return_instance_of_arrays()

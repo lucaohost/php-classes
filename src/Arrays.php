@@ -4,7 +4,7 @@ namespace PHPClass;
 
 use PHPClass\Types;
 
-class Arrays implements \Iterator
+class Arrays implements \Iterator, \Countable
 {
     const TYPE_ARRAY  = 'array';
     const TYPE_OBJECT = 'object';

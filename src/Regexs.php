@@ -16,7 +16,7 @@ class Regexs
         return new Arrays(preg_split($this->regex, $subject, $limit, $flags));
     }
 
-    public function replace(string $replacement, string $subject, int $limit = -1, &$count = 0): Arrays
+    public function replace(string $replacement, string $subject, int $limit = -1, &$count = null): string
     {
         return preg_replace($this->regex, $replacement, $subject, $limit, $count);
     }
