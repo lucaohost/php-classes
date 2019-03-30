@@ -1,9 +1,9 @@
 {
-    "name": "lopesrichard/php-classes",
+    "name": "cajudev/php-classes",
     "description": "Making php more object oriented.",
     "keywords": ["object oriented", "classes", "composer", "php"],
     "license": "MIT",
-    "homepage": "https://github.com/lopesrichard/php-classes",
+    "homepage": "https://github.com/cajudev/php-classes",
     "type": "library",
     "authors": [
         {
@@ -13,13 +13,18 @@
     ],
     "autoload": {
         "psr-4": {
-            "PHPClass\\": [
+            "Cajudev\\Classes\\": [
                 "src/",
                 "tests/"
             ]
         }
     },
+    "require": {
+        "php": "^7.3"
+    },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "php-coveralls/php-coveralls": "^2",
+        "phpdocumentor/phpdocumentor":"2.*"
     }
 }

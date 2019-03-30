@@ -1,48 +1,41 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use PHPClass\Strings;
-use PHPClass\Arrays;
+use Cajudev\Classes\Strings;
 
 class StringsTest extends TestCase
 {
     public function setUp(): void
     {
-        $string = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
-        $this->strings = new Strings($string);
+        $this->strings = new Strings('Lorem ipsum dolor sit amet, consectetur adipiscing elit');
     }
 
     public function test_replace()
     {
         $this->strings->replace(' ', '');
         $expect = 'Loremipsumdolorsitamet,consecteturadipiscingelit';
-        self::assertEquals($expect, $this->strings->getString());
+        self::assertEquals($expect, $this->strings); //comparing the object
     }
 
-    public function test_replace_with_regex()
+    public function test_xreplace()
     {
-        $this->strings->replace('/\s/', '', true);
+        $this->strings->xreplace('/\s/', '');
         $expect = 'Loremipsumdolorsitamet,consecteturadipiscingelit';
-        self::assertEquals($expect, $this->strings->getString());
-    }
-
-    public function test_split_should_return_instance_of_arrays()
-    {
-        $arrays = $this->strings->split("\s");
-        self::assertInstanceOf(Arrays::class, $arrays);
+        self::assertEquals($expect, $this->strings->get()); //comparing the string
     }
 
     public function test_split()
     {
         $arrays = $this->strings->split(" ");
         $expect = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit'];
-        self::assertEquals($expect, $arrays->getArray());
+        self::assertEquals($expect, $arrays->get());
     }
 
-    public function test_split_with_regex()
+    public function test_xsplit()
     {
-        $arrays = $this->strings->split("/\s/", true);
-        $expect = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit'];
-        self::assertEquals($expect, $arrays->getArray());
+        $this->strings->set('Lorem ipsum dolor sit amet');
+        $arrays = $this->strings->xsplit("/\s/");
+        $expect = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'];
+        self::assertEquals($expect, $arrays->get());
     }
 }

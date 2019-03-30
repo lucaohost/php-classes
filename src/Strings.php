@@ -1,66 +1,66 @@
 <?php
 
-namespace PHPClass;
+namespace Cajudev\Classes;
 
-use PHPClass\Arrays;
-use PHPClass\Regexs;
+use Cajudev\Classes\Arrays;
+use Cajudev\Classes\Regexs;
 
 class Strings
 {
-    private $string;
+    private $content;
 
-    public function __construct(string $string)
+    public function __construct(string $string = '')
     {
-        $this->string = $string;
+        $this->content = $string;
     }
 
-    public function replace(string $search, string $replacement, $regex = false, int $limit = -1, &$count = 0)
+    /**
+     * Perform a basic text replacement
+     * 
+     * @param  string $search
+     * @param  string $replace
+     * @param  int $count
+     *
+     * @return self
+     */
+    public function replace(string $search, string $replace, int &$count = null): self
     {
-        return $regex ? $this->regexReplace($search, $replacement, $limit, $count) : $this->regularReplace($search, $replacement, $count);
+        $this->content = str_replace($search, $replace, $this->content, $count);
+        return $this;
     }
 
-    private function regularReplace(string $search, string $replacement, &$count = 0)
+    /**
+     * Perform a advanced text replacement using regular expressions
+     */
+    public function xreplace(string $pattern, string $replacement, int $limit = -1, &$count = null): self
     {
-        $this->string = str_replace($search, $replacement, $this->string, $count);
-        return $this->string;
+        $this->content = preg_replace($pattern, $replacement, $this->content, $limit, $count);
+        return $this;
     }
 
-    private function regexReplace(string $search, string $replacement, int $limit = -1, &$count = 0)
+    public function split(string $delimiter, int $limit = PHP_INT_MAX): Arrays
     {
-        $regex = new Regexs($search);
-        $this->string = $regex->replace($replacement, $this->string, $limit, $count);
-        return $this->string;
+        return new Arrays(explode($delimiter, $this->content, $limit));
     }
 
-    public function split(string $pattern, bool $regex = false, int $limit = PHP_INT_MAX, int $flags = 0): Arrays
+    public function xsplit(string $pattern, int $limit = -1, int $flags = 0): Arrays
     {
-        return $regex ? $this->regexSplit($pattern, $limit, $flags) : $this->regularSplit($pattern, $limit);
+        return new Arrays(preg_split($pattern, $this->content, $limit, $flags));
     }
 
-    private function regularSplit(string $delimiter, int $limit = PHP_INT_MAX): Arrays
+    public function set(string $string): self
     {
-        return new Arrays(explode($delimiter, $this->string, $limit));
-    }
-
-    private function regexSplit(string $pattern, int $limit = PHP_INT_MAX, int $flags = 0): Arrays
-    {
-        $regex = new Regexs($pattern);
-        return $regex->split($this->string, $limit, $flags);
-    }
-
-    public function getString(): string
-    {
-		return $this->string;
-	}
-
-    public function setString(string $string)
-    {
-        $this->string = $string;
+        $this->content = $string;
         return $this;
     }
     
+    public function get(): string
+    {
+		return $this->content;
+	}
+    
     public function __toString()
     {
-        return $this->string;
+        return $this->content;
     }
 }

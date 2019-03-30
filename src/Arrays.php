@@ -1,66 +1,21 @@
 <?php
 
-namespace PHPClass;
+namespace Cajudev\Classes;
 
-use PHPClass\Types;
+use Cajudev\Classes\Type;
+use Cajudev\Classes\Json;
+use Cajudev\Classes\Exceptions\MalformedException;
 
-class Arrays implements \Iterator, \Countable
+class Arrays implements \ArrayAccess, \Iterator, \Countable
 {
-    const TYPE_ARRAY  = 'array';
-    const TYPE_OBJECT = 'object';
+    use \Cajudev\Classes\Traits\ArrayAccessTrait;
+    use \Cajudev\Classes\Traits\IteratorTrait;
 
-    private $array;
+    private $content = [];
 
-    public function __construct($content)
+    public function __construct(...$content)
     {
-        $this->setArray($content);
-    }
-
-    public function setArray($content)
-    {
-        $type = new Types($content);
-        switch ($type->getType()) {
-            case self::TYPE_ARRAY:
-                $this->array = $content;
-                break;
-            case self::TYPE_OBJECT:
-                $this->array = $this->parseObject($content);
-                break;
-            default:
-                throw new TypeError('The argument passed it\'s not an array or an object');
-        }
-    }
-
-    private function parseObject(Object $object)
-    {
-        $vars = (array) $object;
-        $array = [];
-        foreach ($vars as $name => $value) {
-            $nameString = new Strings($name);
-            $nameArray  = $nameString->split("\0");
-            $array[$nameArray->getLast()] = $value;
-        }
-        return $array;
-    }
-
-    public function count(): int
-    {
-        return count($this->array);
-    }
-
-    public function getArray(): array
-    {
-        return $this->array;
-    }
-
-    public function getFirst()
-    {
-        return $this->array[0] ?? null;
-    }
-
-    public function getLast()
-    {
-        return $this->array[$this->count() - 1] ?? null;
+        $this->push(...$content);
     }
 
     public static function isArray($array): bool
@@ -68,33 +23,95 @@ class Arrays implements \Iterator, \Countable
         return is_array($array);
     }
 
-    /* ================================================== */
-    /* ================= ITERATOR METHODS =============== */
-    /* ================================================== */
-
-    public function rewind()
+    public static function combine($keys, $values): self
     {
-        reset($this->array);
+        $keys   = $keys   instanceof Arrays ? $keys->get()   : $keys;
+        $values = $values instanceof Arrays ? $values->get() : $values;
+        
+        return new self(array_combine($keys, $values));
     }
 
-    public function current()
+    private function parseObject(Object $object): array
     {
-        return current($this->array);
+        $vars = (array) $object;
+        $array = [];
+        foreach ($vars as $name => $value) {
+            $nameString = new Strings($name);
+            $nameString->xreplace('/.*\0(.*)/', '\1');
+            $array[$nameString->get()] = $value;
+        }
+        return $array;
     }
 
-    public function key()
+    public function push(...$values): self
     {
-        return key($this->array);
+        foreach ($values as $value) {
+            $type = new Type($value);
+
+            switch ($type->getType()) {
+                case Type::NULL:
+                    continue 2;
+                case Type::ARRAY:
+                    $this->content += $value;
+                    break;
+                case Type::OBJECT:
+                    $this->content += $this->parseObject($value);
+                    break;
+                default:
+                    $this->content[] = $value;
+            }
+        }
+
+        return $this;
     }
 
-    public function next()
+    public function apush(...$values): self
     {
-        return next($this->array);
+        $values = new Arrays($values);
+
+        for ($i = 0; $i < $values->count(); $i++) {
+            $this->content[$values[$i]] = $values[++$i] ?? null;
+        }
+
+        return $this;
     }
 
-    public function valid()
+    
+    public function chunk(int $size, bool $preserve_keys = false): self
     {
-        $key = key($this->array);
-        return $key !== null && $key !== false;
+        $this->content = array_chunk($this->content, $size, $preserve_keys);
+        return $this;
+    }
+
+    public function count(): int
+    {
+        return count($this->content);
+    }
+
+    public function last()
+    {
+        return $this->content[$this->count() - 1] ?? null;
+    }
+
+    public function lower(): self
+    {
+        $this->content = array_change_key_case($this->content, CASE_LOWER);
+        return $this;
+    }
+
+    public function upper(): self
+    {
+        $this->content = array_change_key_case($this->content, CASE_UPPER);
+        return $this;
+    }
+
+    public function get(): array
+    {
+        return $this->content;
+    }
+
+    public function __toString()
+    {
+        return Json::encode($this->content, JSON_UNESCAPED_SLASHES);
     }
 }
