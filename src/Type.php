@@ -2,6 +2,9 @@
 
 namespace Cajudev\Classes;
 
+/**
+ * Responsible for manager primitive types
+ */
 class Type
 {
     const ARRAY    = 'array';

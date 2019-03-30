@@ -75,8 +75,8 @@ class ArraysTest extends TestCase
         $arrays = new Arrays();
 
         $arrays['Lorem'] = 'ipsum';
-        $arrays[] = 'dolor';
-        $arrays['sit'] = 'amet';
+        $arrays[]        = 'dolor';
+        $arrays['sit']   = 'amet';
 
         $expect = ['Lorem' => 'ipsum', 0 => 'dolor', 'sit' => 'amet'];
         
@@ -86,8 +86,6 @@ class ArraysTest extends TestCase
     public function test_accessing_invalid_keys_should_return_null()
     {
         $arrays = new Arrays();
-        $arrays['Lorem'] = 'ipsum';
-
         self::assertEquals(null, $arrays['ipsum']);
     }
 
@@ -115,7 +113,7 @@ class ArraysTest extends TestCase
 
     public function test_iterating_array_foreach()
     {
-        $arrays = new Arrays(['Lorem', 'ipsum', 'dolor']);
+        $arrays = new Arrays('Lorem', 'ipsum', 'dolor');
         foreach ($arrays as $key => $value) {
             self::assertEquals($arrays[$key], $value);
         }
