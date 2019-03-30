@@ -5,9 +5,6 @@ namespace Cajudev\Classes;
 use Cajudev\Classes\Arrays;
 use Cajudev\Classes\Regexs;
 
-/**
- * Responsible for manipulating strings
- */
 class Strings
 {
     private $content;

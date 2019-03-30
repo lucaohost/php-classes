@@ -2,9 +2,6 @@
 
 namespace Cajudev\Classes;
 
-/**
- * Responsible for manipulating JSON
- */
 class Json
 {
     /**

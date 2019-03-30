@@ -6,9 +6,6 @@ use Cajudev\Classes\Type;
 use Cajudev\Classes\Json;
 use Cajudev\Classes\Exceptions\MalformedException;
 
-/**
- * Responsible for manipulating arrays
- */
 class Arrays implements \ArrayAccess, \Iterator, \Countable
 {
     use \Cajudev\Classes\Traits\ArrayAccessTrait;
@@ -177,7 +174,6 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      */
     public static function isArray($array): bool
     {
-        $array = Arrays::isArrays($array) ? $array->get() : $array;
         return is_array($array);
     }
 
