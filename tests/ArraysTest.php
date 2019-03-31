@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Cajudev\Classes\Arrays;
+use Cajudev\Classes\Strings;
 
 class ArraysTest extends TestCase
 {
@@ -74,11 +75,11 @@ class ArraysTest extends TestCase
     {
         $arrays = new Arrays();
 
-        $arrays['Lorem'] = 'ipsum';
-        $arrays[]        = 'dolor';
-        $arrays['sit']   = 'amet';
+        $arrays['Lorem']         = 'ipsum';
+        $arrays[]                = 'dolor';
+        $arrays['sit']['amet']   = 'amet';
 
-        $expect = ['Lorem' => 'ipsum', 0 => 'dolor', 'sit' => 'amet'];
+        $expect = ['Lorem' => 'ipsum', 0 => 'dolor', 'sit' => ['amet' => 'amet']];
         
         self::assertEquals($expect, $arrays->get());
     }
@@ -113,10 +114,46 @@ class ArraysTest extends TestCase
 
     public function test_iterating_array_foreach()
     {
-        $arrays = new Arrays('Lorem', 'ipsum', 'dolor');
+        $arrays = new Arrays('Lorem', null, 'ipsum', 'dolor');
         foreach ($arrays as $key => $value) {
             self::assertEquals($arrays[$key], $value);
         }
+    }
+
+    public function test_map()
+    {
+        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays->map(function($value) {
+            $str = new Strings($value);
+            return $str->upper()->get();
+        });
+        $expect = ['LOREM', 'IPSUM', 'DOLOR'];
+        self::assertEquals($expect, $arrays->get());
+    }
+
+    public function test_kmap()
+    {
+        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays->kmap(function($key) {
+            return ++$key;
+        });
+        $expect = [1 => 'lorem', 2 => 'ipsum', 3 => 'dolor'];
+        self::assertEquals($expect, $arrays->get());
+    }
+
+    public function test_fmap()
+    {
+        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+
+        $arrays->fmap(function($key) {
+            return ++$key;
+        }, function($value) {
+            $str = new Strings($value);
+            return $str->upper()->get();
+        });
+
+        $expect = [1 => 'LOREM', 2 => 'IPSUM', 3 => 'DOLOR'];
+        self::assertEquals($expect, $arrays->get());
     }
 
     public function test_isArray_should_return_true()

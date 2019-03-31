@@ -10,6 +10,7 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
 {
     use \Cajudev\Classes\Traits\ArrayAccessTrait;
     use \Cajudev\Classes\Traits\IteratorTrait;
+    use \Cajudev\Classes\Traits\CountableTrait;
 
     private $content = [];
 
@@ -27,14 +28,11 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      */
     private function parseObject(Object $object): array
     {
-        $vars = (array) $object;
-        $array = [];
-        foreach ($vars as $name => $value) {
-            $nameString = new Strings($name);
-            $nameString->xreplace('/.*\0(.*)/', '\1');
-            $array[$nameString->get()] = $value;
-        }
-        return $array;
+        $vars = new Arrays((array) $object);
+        return $vars->kmap(function($key) {
+            $key = new Strings($key);
+            return $key->xreplace('/.*\0(.*)/', '\1')->get();
+        })->get();
     }
 
     /**
@@ -84,6 +82,74 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
         return $this;
     }
 
+    /**
+     * Applies the callback to all elements
+     *
+     * @param  callable $handle
+     *
+     * @return self
+     */
+    public function map(callable $handle): self
+    {
+        $this->content = array_map(function($var) use($handle) {  
+            return $handle($var);
+        }, $this->content);
+
+        return $this;
+    }
+
+    /**
+     * Applies the callback to all keys
+     *
+     * @param  callable $handle
+     *
+     * @return self
+     */
+    public function kmap(callable $handle): self
+    {
+        $keys = $this->keys()->map($handle);
+        $values = $this->values();
+
+        $this->content = Arrays::combine($keys, $values)->get();
+        return $this;
+    }
+
+    /**
+     * Applies the callback to both, keys and values
+     *
+     * @param  callable $keyHandle
+     * @param  callable $valueHandle
+     *
+     * @return self
+     */
+    public function fmap(callable $keyHandle, callable $valueHandle): self
+    {
+        $keys = $this->keys()->map($keyHandle);
+        $values = $this->values()->map($valueHandle);
+
+        $this->content = Arrays::combine($keys, $values)->get();
+        return $this;
+    }
+
+    /**
+     * Return a object with all the keys of the array
+     *
+     * @return self
+     */
+    public function keys(): self
+    {
+        return new Arrays(array_keys($this->content));
+    }
+
+    /**
+     * Return a object with all the values of the array
+     *
+     * @return self
+     */
+    public function values(): self
+    {
+        return new Arrays(array_values($this->content));
+    }
     
     /**
      * Split the array into chunks
@@ -97,16 +163,6 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
     {
         $this->content = array_chunk($this->content, $size, $preserve_keys);
         return $this;
-    }
-
-    /**
-     * Count all elements of the array
-     *
-     * @return int
-     */
-    public function count(): int
-    {
-        return count($this->content);
     }
 
     /**

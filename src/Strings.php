@@ -72,6 +72,28 @@ class Strings
         return new Arrays(preg_split($pattern, $this->content, $limit, $flags));
     }
 
+    /**
+     * Make the string uppercase
+     *
+     * @return self
+     */
+    public function upper(): self
+    {
+        $this->content = mb_strtoupper($this->content);
+        return $this;
+    }
+
+    /**
+     * Make the string lowercase
+     *
+     * @return self
+     */
+    public function lower(): self
+    {
+        $this->content = mb_strtolower($this->content);
+        return $this;
+    }
+
     public function set(string $string): self
     {
         $this->content = $string;
