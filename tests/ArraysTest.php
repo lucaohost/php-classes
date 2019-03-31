@@ -185,13 +185,16 @@ class ArraysTest extends TestCase
 
     public function test_count()
     {
-        $arrays = new Arrays([1,2,3,4,5]);
+        $arrays    = new Arrays(1, 2, 3, 4, 5);
+        $arrays[2] = [1, 2, 3];
+
         self::assertEquals(5, $arrays->count());
+        self::assertEquals(3, $arrays[2]->count());
     }
 
     public function test_last()
     {
-        $arrays = new Arrays([1,2,3,4,5]);
+        $arrays = new Arrays(1, 2, 3, 4, 5);
         self::assertEquals(5, $arrays->last());
     }
 
