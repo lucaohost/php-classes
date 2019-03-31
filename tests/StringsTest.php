@@ -38,4 +38,18 @@ class StringsTest extends TestCase
         $expect = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'];
         self::assertEquals($expect, $arrays->get());
     }
+
+    public function test_lower()
+    {
+        $this->strings->lower();
+        $expect = 'lorem ipsum dolor sit amet, consectetur adipiscing elit';
+        self::assertEquals($expect, $this->strings->get());
+    }
+
+    public function test_upper()
+    {
+        $this->strings->upper();
+        $expect = 'LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT';
+        self::assertEquals($expect, $this->strings->get());
+    }
 }

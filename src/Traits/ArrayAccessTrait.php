@@ -6,6 +6,7 @@ trait ArrayAccessTrait
 {
     public function offsetSet($offset, $value)
     {
+        $value = self::isArray($value) ? new self($value) : $value;
         if ($offset === null) {
             $this->content[] = $value;
         } else {
@@ -15,12 +16,12 @@ trait ArrayAccessTrait
 
     public function offsetExists($offset)
     {
-        return isset($this->content[$offset]);
+        return $this->isset($offset);
     }
 
     public function offsetUnset($offset)
     {
-        unset($this->content[$offset]);
+        $this->unset($offset);
     }
 
     public function &offsetGet($key)

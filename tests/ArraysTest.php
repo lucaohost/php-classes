@@ -6,7 +6,6 @@ use Cajudev\Classes\Strings;
 
 class ArraysTest extends TestCase
 {
-
     public function test_creating_from_array()
     {
         $regularArray = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit'];
@@ -29,24 +28,9 @@ class ArraysTest extends TestCase
     public function test_pushing_several_values()
     {
         $arrays = new Arrays();
-
-        $object = new class {
-            private   $private = 'Lorem';
-            public    $public = 'ipsum';
-            protected $protected = 'dolor';
-        };
-
         $array = ['amet' => 'consectetur'];
-
-        $arrays->push('Lorem', $object, 'ipsum', $array);
-        $expect = [
-            'Lorem',
-            'private'   => 'Lorem',
-            'public'    => 'ipsum',
-            'protected' => 'dolor',
-            'ipsum',
-            'amet'      => 'consectetur'
-        ];
+        $arrays->push('Lorem', $array, 'ipsum', 2222);
+        $expect = ['Lorem', ['amet' => 'consectetur'], 'ipsum', 2222];
         self::assertEquals($expect, $arrays->get());
     }
 
@@ -94,22 +78,44 @@ class ArraysTest extends TestCase
     {
         $array = new Arrays();
         $array['Lorem'] = 'ipsum';
-        self::assertEquals(true, isset($array['Lorem']));
+        self::assertEquals(true, $array->isset('Lorem'));
     }
 
     public function test_isset_should_return_false()
     {
         $array = new Arrays();
         $array['Lorem'] = 'ipsum';
-        self::assertEquals(false, isset($array['ipsum']));
+        self::assertEquals(false, $array->isset('ipsum'));
+    }
+
+    public function test_empty_should_return_false()
+    {
+        $array = new Arrays();
+        $array['Lorem'] = 'ipsum';
+        self::assertEquals(false, $array->empty('Lorem'));
+    }
+
+    public function test_empty_should_return_true()
+    {
+        $array = new Arrays();
+        $array['Lorem'] = 'ipsum';
+        self::assertEquals(true, $array->empty('ipsum'));
     }
 
     public function test_unset_key()
     {
         $array = new Arrays();
         $array['Lorem'] = 'ipsum';
+        $array->unset('Lorem');
+        self::assertEquals(false, $array->isset('Lorem'));
+    }
+
+    public function test_unset_key_using_function()
+    {
+        $array = new Arrays();
+        $array['Lorem'] = 'ipsum';
         unset($array['Lorem']);
-        self::assertEquals(false, isset($array['Lorem']));
+        self::assertEquals(false, $array->isset('Lorem'));
     }
 
     public function test_iterating_array_foreach()

@@ -21,6 +21,11 @@ class Type
         $this->object = $object;
     }
 
+    /**
+     * Get the type of a variable
+     *
+     * @return void
+     */
     public function getType()
     {
         return gettype($this->object);

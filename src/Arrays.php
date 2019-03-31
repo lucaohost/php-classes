@@ -16,7 +16,33 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
 
     public function __construct(...$content)
     {
-        $this->push(...$content);
+        if (count($content) == 1) {
+            $this->set($content[0]);
+        } else {
+            $this->content = $content;
+        }
+    }
+
+    /**
+     * Set the content of the array
+     *
+     * @param  mixed $content
+     *
+     * @return self
+     */
+    public function set($content): self
+    {
+        $type = new Type($content);
+        switch ($type->getType()) {
+            case Type::ARRAY:
+                $this->content = $content;
+                break;
+            case Type::OBJECT:
+                $this->content = $this->parseObject($content);
+                break;
+        }
+
+        return $this;
     }
 
     /**
@@ -44,23 +70,7 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      */
     public function push(...$values): self
     {
-        foreach ($values as $value) {
-            $type = new Type($value);
-
-            switch ($type->getType()) {
-                case Type::NULL:
-                    continue 2;
-                case Type::ARRAY:
-                    $this->content += $value;
-                    break;
-                case Type::OBJECT:
-                    $this->content += $this->parseObject($value);
-                    break;
-                default:
-                    $this->content[] = $value;
-            }
-        }
-
+        array_push($this->content, ...$values);
         return $this;
     }
 
@@ -132,6 +142,42 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
     }
 
     /**
+     * Determine if a variable is set and is not null
+     *
+     * @param  mixed $key
+     *
+     * @return bool
+     */
+    public function isset($key): bool
+    {
+        return isset($this->content[$key]);
+    }
+
+    /**
+     * Determine wheter a variable is empty
+     *
+     * @param  mixed $key
+     *
+     * @return bool
+     */
+    public function empty($key): bool
+    {
+        return empty($this->content[$key]);
+    }
+
+    /**
+     * Unset a given variable
+     *
+     * @param  mixed $key
+     *
+     * @return void
+     */
+    public function unset($key)
+    {
+        unset($this->content[$key]);
+    }
+
+    /**
      * Return a object with all the keys of the array
      *
      * @return self
@@ -172,7 +218,9 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      */
     public function last()
     {
-        return $this->content[$this->count() - 1] ?? null;
+        $return = $this->end();
+        $this->rewind();
+        return $return;
     }
 
     /**
