@@ -52,7 +52,7 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      *
      * @return array
      */
-    private function parseObject(Object $object): array
+    private function parseObject($object): array
     {
         $vars = new Arrays((array) $object);
         return $vars->kmap(function($key) {
