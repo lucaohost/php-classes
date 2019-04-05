@@ -6,7 +6,7 @@ class Objects
 {
     protected $content;
 
-    public function instanceOf($object): bool
+    public static function instanceOf($object): bool
     {
         return $object instanceof static;
     }
