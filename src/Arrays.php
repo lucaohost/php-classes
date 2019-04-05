@@ -253,7 +253,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
 
     public function __toString()
     {
-        return Json::encode($this->get(), JSON_UNESCAPED_SLASHES);
+        return Json::encode($this->get(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     /* ============== STATIC METHODS ============== */
