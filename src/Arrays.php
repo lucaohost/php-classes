@@ -244,12 +244,16 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
 
     public function get(): array
     {
-        return $this->content;
+        $array = [];
+        foreach ($this->content as $key => $content) {
+            $array[$key] = Arrays::instanceOf($content) ? $content->get() : $content;
+        }
+        return $array;
     }
 
     public function __toString()
     {
-        return Json::encode($this->content, JSON_UNESCAPED_SLASHES);
+        return Json::encode($this->get(), JSON_UNESCAPED_SLASHES);
     }
 
     /* ============== STATIC METHODS ============== */
