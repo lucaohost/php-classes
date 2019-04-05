@@ -1,6 +1,6 @@
 <?php
 
-namespace Cajudev\Classes;
+namespace Cajudev\Classes\Util;
 
 class Type
 {
@@ -13,21 +13,24 @@ class Type
     const RESOURCE = 'resource';
     const NULL     = 'NULL';
     const UNKNOWN  = 'unknown type';
-    
-    private $object;
 
-    public function __construct($object)
-    {
-        $this->object = $object;
-    }
+    private function __construct() {}
 
     /**
      * Get the type of a variable
      *
      * @return void
      */
-    public function getType()
+    public static function getType($mixed)
     {
-        return gettype($this->object);
+        return gettype($mixed);
+    }
+
+    public static function isArray($mixed) {
+        return is_array($mixed);
+    }
+
+    public static function isString($mixed) {
+        return is_string($mixed);
     }
 }

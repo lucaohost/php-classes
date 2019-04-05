@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Cajudev\Classes\Json;
+use Cajudev\Classes\Util\Json;
 
 class JsonTest extends TestCase
 {

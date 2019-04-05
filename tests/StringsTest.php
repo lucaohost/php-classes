@@ -52,4 +52,14 @@ class StringsTest extends TestCase
         $expect = 'LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT';
         self::assertEquals($expect, $this->strings->get());
     }
+
+    public function test_is_string()
+    {
+        self::assertTrue(Strings::isString('lorem ipsum'));
+    }
+
+    public function test_is_not_string()
+    {
+        self::assertFalse(Strings::isString(5));
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cajudev\Classes;
+namespace Cajudev\Classes\Util;
 
 class Json
 {

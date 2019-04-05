@@ -6,11 +6,25 @@ use Cajudev\Classes\Strings;
 
 class ArraysTest extends TestCase
 {
+    public function test_creating_object()
+    {
+        $arrays = new Arrays();
+        self::assertInstanceOf(Arrays::class, $arrays);
+    }
+
     public function test_creating_from_array()
     {
         $regularArray = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit'];
         $arrays = new Arrays($regularArray);
         self::assertEquals($regularArray, $arrays->get());
+    }
+
+    public function test_creating_from_list_of_values()
+    {
+        $stdClass = new StdClass;
+        $arrays = new Arrays('one', 2, ['three' => 3], $stdClass);
+        $expect = ['one', 2, ['three' => 3], $stdClass];
+        self::assertEquals($expect, $arrays->get());
     }
 
     public function test_creating_from_object()

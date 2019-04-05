@@ -2,17 +2,15 @@
 
 namespace Cajudev\Classes;
 
-use Cajudev\Classes\Type;
-use Cajudev\Classes\Json;
+use Cajudev\Classes\Util\Type;
+use Cajudev\Classes\Util\Json;
 use Cajudev\Classes\Exceptions\MalformedException;
 
-class Arrays implements \ArrayAccess, \Iterator, \Countable
+class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
 {
     use \Cajudev\Classes\Traits\ArrayAccessTrait;
     use \Cajudev\Classes\Traits\IteratorTrait;
     use \Cajudev\Classes\Traits\CountableTrait;
-
-    private $content = [];
 
     public function __construct(...$content)
     {
@@ -32,8 +30,7 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      */
     public function set($content): self
     {
-        $type = new Type($content);
-        switch ($type->getType()) {
+        switch (Type::getType($content)) {
             case Type::ARRAY:
                 $this->content = $content;
                 break;
@@ -258,18 +255,6 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
     /* ============== STATIC METHODS ============== */
 
     /**
-     * Verify whether a element is instance of Arrays
-     *
-     * @param  mixed $array
-     *
-     * @return bool
-     */
-    public static function isArrays($array): bool
-    {
-        return $array instanceof Arrays;
-    }
-
-    /**
      * Verify whether a element is an array
      *
      * @param  mixed $array
@@ -278,7 +263,7 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      */
     public static function isArray($array): bool
     {
-        return is_array($array);
+        return Type::isArray($array);
     }
 
     /**
@@ -291,8 +276,8 @@ class Arrays implements \ArrayAccess, \Iterator, \Countable
      */
     public static function combine($keys, $values): self
     {
-        $keys   = Arrays::isArrays($keys)   ? $keys->get()   : $keys;
-        $values = Arrays::isArrays($values) ? $values->get() : $values;
+        $keys   = Arrays::instanceOf($keys)   ? $keys->get()   : $keys;
+        $values = Arrays::instanceOf($values) ? $values->get() : $values;
         
         return new Arrays(array_combine($keys, $values));
     }

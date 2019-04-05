@@ -4,11 +4,10 @@ namespace Cajudev\Classes;
 
 use Cajudev\Classes\Arrays;
 use Cajudev\Classes\Regexs;
+use Cajudev\Classes\Util\Type;
 
-class Strings
+class Strings extends Objects
 {
-    private $content;
-
     public function __construct(string $string = '')
     {
         $this->content = $string;
@@ -108,5 +107,11 @@ class Strings
     public function __toString()
     {
         return $this->content;
+    }
+
+    /* ============== STATIC METHODS ============== */
+
+    public static function isString($mixed) {
+        return Type::isString($mixed);
     }
 }
