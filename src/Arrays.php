@@ -294,6 +294,26 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         return $this;
     }
 
+    /**
+     * Fetch values in array using dot notation
+     *
+     * @param  string $path
+     *
+     * @return mixed
+     */
+    public function fetch(string $path)
+    {
+        $strings = new Strings($path);
+        return $this->get(...$strings->split('.'));
+    }
+
+    /**
+     * Get the value associated a given key or keys
+     *
+     * @param  mixed $keys
+     *
+     * @return mixed
+     */
     public function get(...$keys)
     {
         $ret = [];

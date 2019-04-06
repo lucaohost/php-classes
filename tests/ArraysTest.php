@@ -85,6 +85,24 @@ class ArraysTest extends TestCase
         self::assertEquals($expect, $arrays->get('Lorem', 'ipsum', 'dolor'));
     }
 
+    public function test_getting_values_using_dot_notation()
+    {
+        $arrays = new Arrays([
+            'app' => [
+                'config' => [
+                    'database' => [
+                        'name'     => 'teste',
+                        'host'     => 'localhost',
+                        'password' => '1234'
+                    ]
+                ]
+            ]
+        ]);
+
+        $password = $arrays->fetch('app.config.database.password');
+        self::assertEquals('1234', $password);
+    }
+
     public function test_inserting_values_using_array_sintax()
     {
         $arrays = new Arrays();
