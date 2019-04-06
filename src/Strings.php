@@ -87,6 +87,21 @@ class Strings extends Objects
     }
 
     /**
+     * Perform a global regular expression match
+     *
+     * @param  string $pattern
+     * @param  int    $flags
+     * @param  int    $offset
+     *
+     * @return Arrays
+     */
+    public function matchAll(string $pattern, int $flags = 0, int $offset = 0): Arrays
+    {
+        preg_match_all($pattern, $this->content, $matches, $flags, $offset);
+        return new Arrays($matches);
+    }
+
+    /**
      * Make the string uppercase
      *
      * @return self

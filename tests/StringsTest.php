@@ -39,6 +39,20 @@ class StringsTest extends TestCase
         self::assertEquals($expect, $arrays->get());
     }
 
+    public function test_match()
+    {
+        $arrays = $this->strings->match('/\w+/');
+        $expect = ['Lorem'];
+        self::assertEquals($expect, $arrays->get());
+    }
+
+    public function test_matchAll()
+    {
+        $arrays = $this->strings->matchAll('/\w+/');
+        $expect = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit'];
+        self::assertEquals($expect, $arrays[0]->get());
+    }
+
     public function test_lower()
     {
         $this->strings->lower();
