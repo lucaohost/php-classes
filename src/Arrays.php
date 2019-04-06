@@ -157,7 +157,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function isset($key): bool
     {
-        return isset($this->content[$key]);
+        return isset($this[$key]);
     }
 
     /**
@@ -169,7 +169,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function noset($key): bool
     {
-        return !isset($this->content[$key]);
+        return !isset($this[$key]);
     }
 
     /**
@@ -181,7 +181,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function empty($key): bool
     {
-        return empty($this->content[$key]);
+        return empty($this[$key]);
     }
 
     /**
@@ -193,7 +193,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function filled($key): bool
     {
-        return !empty($this->content[$key]);
+        return !empty($this[$key]);
     }
 
     /**
@@ -205,7 +205,28 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function unset($key)
     {
-        unset($this->content[$key]);
+        unset($this[$key]);
+    }
+
+    /**
+     * Remove the first element from an array
+     *
+     * @return self
+     */
+    public function shift(): self
+    {
+        array_shift($this->content);
+        return $this;
+    }
+
+    /**
+     * Join array elements into a Strings Object
+     *
+     * @return void
+     */
+    public function join(string $glue)
+    {
+        return new Strings(implode($glue, $this->content));
     }
 
     /**
@@ -274,19 +295,6 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     {
         $this->content = array_change_key_case($this->content, CASE_UPPER);
         return $this;
-    }
-
-    /**
-     * Fetch values in array using dot notation
-     *
-     * @param  string $path
-     *
-     * @return mixed
-     */
-    public function fetch(string $path)
-    {
-        $strings = new Strings($path);
-        return $this->get(...$strings->split('.'));
     }
 
     /**

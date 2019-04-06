@@ -68,24 +68,6 @@ class ArraysTest extends TestCase
         self::assertEquals($expect, $arrays->get('lorem', 'ipsum', 'dolor'));
     }
 
-    public function test_getting_values_using_dot_notation()
-    {
-        $arrays = new Arrays([
-            'app' => [
-                'config' => [
-                    'database' => [
-                        'name'     => 'teste',
-                        'host'     => 'localhost',
-                        'password' => '1234'
-                    ]
-                ]
-            ]
-        ]);
-
-        $password = $arrays->fetch('app.config.database.password');
-        self::assertEquals('1234', $password);
-    }
-
     public function test_inserting_values_using_array_sintax()
     {
         $arrays = new Arrays();
@@ -105,10 +87,29 @@ class ArraysTest extends TestCase
         self::assertEquals(null, $arrays['ipsum']);
     }
 
+    public function test_manipulating_values_using_dot_notation()
+    {
+        $arrays = new Arrays();
+
+        $arrays['lorem.ipsum.dolor.sit'] = 'amet';
+        $arrays['lorem.ipsum.dolor'][] = 'consectetur';
+        $arrays['lorem.ipsum.dolor'][] = ['sit' => 'amet'];
+        $arrays['lorem.ipsum'][] = $arrays['lorem.ipsum.dolor'];
+
+
+        $expect['lorem']['ipsum']['dolor']['sit'] = 'amet';
+        $expect['lorem']['ipsum']['dolor'][] = 'consectetur';
+        $expect['lorem']['ipsum']['dolor'][] = ['sit' => 'amet'];
+        $expect['lorem']['ipsum'][] = $expect['lorem']['ipsum']['dolor'];
+        
+        self::assertEquals($expect, $arrays->get());
+    }
+
     public function test_isset_should_return_true()
     {
         $array = new Arrays();
         $array['lorem'] = 'ipsum';
+        self::assertEquals(true, isset($array['lorem']));
         self::assertEquals(true, $array->isset('lorem'));
     }
 
@@ -116,7 +117,24 @@ class ArraysTest extends TestCase
     {
         $array = new Arrays();
         $array['lorem'] = 'ipsum';
+        self::assertEquals(false, isset($array['ipsum']));
         self::assertEquals(false, $array->isset('ipsum'));
+    }
+
+    public function test_isset_with_dot_notation_should_return_true()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'ipsum';
+        self::assertEquals(true, isset($array['lorem.ipsum']));
+        self::assertEquals(true, $array->isset('lorem.ipsum'));
+    }
+
+    public function test_isset_with_dot_notation_should_return_false()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'ipsum';
+        self::assertEquals(false, isset($array['lorem.dolor']));
+        self::assertEquals(false, $array->isset('lorem.dolor'));
     }
 
     public function test_noset_should_return_false()
@@ -133,6 +151,20 @@ class ArraysTest extends TestCase
         self::assertEquals(true, $array->noset('ipsum'));
     }
 
+    public function test_noset_with_dot_notation_should_return_true()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'ipsum';
+        self::assertEquals(true, $array->noset('lorem.dolor'));
+    }
+
+    public function test_noset_with_dot_notation_should_return_false()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'ipsum';
+        self::assertEquals(false, $array->noset('lorem.ipsum'));
+    }
+
     public function test_empty_should_return_false()
     {
         $array = new Arrays();
@@ -145,6 +177,22 @@ class ArraysTest extends TestCase
         $array = new Arrays();
         $array['lorem'] = 'ipsum';
         self::assertEquals(true, $array->empty('ipsum'));
+    }
+
+    public function test_empty_with_dot_notation_should_return_true()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = false;
+        self::assertEquals(true, empty($array['lorem.ipsum']));
+        self::assertEquals(true, $array->empty('lorem.ipsum'));
+    }
+
+    public function test_empty_with_dot_notation_should_return_false()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'ipsum';
+        self::assertEquals(false, empty($array['lorem.ipsum']));
+        self::assertEquals(false, $array->empty('lorem.ipsum'));
     }
 
     public function test_filled_should_return_true()
@@ -161,6 +209,20 @@ class ArraysTest extends TestCase
         self::assertEquals(false, $array->filled('ipsum'));
     }
 
+    public function test_filled_with_dot_notation_should_return_true()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'lorem';
+        self::assertEquals(true, $array->filled('lorem.ipsum'));
+    }
+
+    public function test_filled_with_dot_notation_should_return_false()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = false;
+        self::assertEquals(false, $array->filled('lorem.ipsum'));
+    }
+
     public function test_unset_key()
     {
         $array = new Arrays();
@@ -175,6 +237,22 @@ class ArraysTest extends TestCase
         $array['lorem'] = 'ipsum';
         unset($array['lorem']);
         self::assertEquals(false, $array->isset('lorem'));
+    }
+
+    public function test_unset_key_using_dot_notation()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'sit';
+        $array->unset('lorem.ipsum');
+        self::assertEquals(false, $array->isset('lorem.ipsum'));
+    }
+
+    public function test_unset_key_using_dot_notation_and_function()
+    {
+        $array = new Arrays();
+        $array['lorem.ipsum'] = 'sit';
+        unset($array['lorem.ipsum']);
+        self::assertEquals(false, $array->isset('lorem.ipsum'));
     }
 
     public function test_iterating_array_foreach()
