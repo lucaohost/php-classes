@@ -92,7 +92,16 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         return $this;
     }
 
-    public function for($i, $add, \Closure $function)
+    /**
+     * Perform a simplified for loop
+     *
+     * @param  int     $i
+     * @param  int     $add
+     * @param  Closure $function
+     *
+     * @return void
+     */
+    public function for(int $i, int $add, \Closure $function)
     {
         $keys   = $this->keys();
         $values = $this->values();
