@@ -9,8 +9,8 @@ trait CountableTrait
      *
      * @return int
      */
-    public function count(): int
+    public function count(int $mode = COUNT_NORMAL): int
     {
-        return count($this->content);
+        return count($this->content, $mode);
     }
 }
