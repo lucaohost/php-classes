@@ -178,10 +178,26 @@ class ArraysTest extends TestCase
 
     public function test_iterating_array_foreach()
     {
-        $arrays = new Arrays('Lorem', null, 'ipsum', 'dolor');
+        $arrays = new Arrays('Lorem', 'ipsum', 'dolor', 'sit');
         foreach ($arrays as $key => $value) {
             self::assertEquals($arrays[$key], $value);
         }
+    }
+
+    public function test_iterating_using_method_for_forward()
+    {
+        $arrays = new Arrays('Lorem', 'ipsum', 'dolor', 'sit');
+        $arrays->for(0, 1, function($key, $value) use ($arrays) {
+            self::assertEquals($arrays[$key], $value);
+        });
+    }
+
+    public function test_iterating_using_method_for_backward()
+    {
+        $arrays = new Arrays('Lorem', 'ipsum', 'dolor', 'sit');
+        $arrays->for($arrays->count(), -1, function($key, $value) use ($arrays) {
+            self::assertEquals($arrays[$key], $value);
+        });
     }
 
     public function test_map()

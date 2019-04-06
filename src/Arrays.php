@@ -12,6 +12,9 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     use \Cajudev\Classes\Traits\IteratorTrait;
     use \Cajudev\Classes\Traits\CountableTrait;
 
+    private const BREAK    = 'break';
+    private const CONTINUE = 'continue';
+
     public function __construct(...$content)
     {
         if (count($content) == 1) {
@@ -87,6 +90,22 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         }
 
         return $this;
+    }
+
+    public function for($i, $add, \Closure $function)
+    {
+        $keys   = $this->keys();
+        $values = $this->values();
+        $count  = $values->count();
+
+        for ($i; ($add >= 0 ? $i < $count : $i >= 0); $i += $add) {
+            $return = $function($keys[$i], $values[$i]);
+
+            switch ($return) {
+                case self::BREAK: break 2;
+                case self::CONTINUE; continue 2;
+            }
+        }
     }
 
     /**
