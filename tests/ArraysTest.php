@@ -6,7 +6,7 @@ use Cajudev\Classes\Strings;
 
 class ArraysTest extends TestCase
 {
-    public function test_creating_object()
+    public function test_creating_object() 
     {
         $arrays = new Arrays();
         self::assertInstanceOf(Arrays::class, $arrays);
@@ -69,6 +69,22 @@ class ArraysTest extends TestCase
         self::assertEquals($expect, $arrays->get());
     }
 
+    public function test_getting_values_using_successive_get()
+    {
+        $arrays = new Arrays();
+        $arrays->apush('Lorem', ['ipsum' => 'dolor'], 'sit', 'amet');
+        $expect = 'dolor';
+        self::assertEquals($expect, $arrays->get('Lorem')->get('ipsum'));
+    }
+
+    public function test_getting_values_using_several_keys_argument()
+    {
+        $arrays = new Arrays();
+        $arrays->apush('Lorem', ['ipsum' => ['dolor' => 'sit']], 'amet');
+        $expect = 'sit';
+        self::assertEquals($expect, $arrays->get('Lorem', 'ipsum', 'dolor'));
+    }
+
     public function test_inserting_values_using_array_sintax()
     {
         $arrays = new Arrays();
@@ -102,6 +118,20 @@ class ArraysTest extends TestCase
         self::assertEquals(false, $array->isset('ipsum'));
     }
 
+    public function test_noset_should_return_false()
+    {
+        $array = new Arrays();
+        $array['Lorem'] = 'ipsum';
+        self::assertEquals(false, $array->noset('Lorem'));
+    }
+
+    public function test_noset_should_return_true()
+    {
+        $array = new Arrays();
+        $array['Lorem'] = 'ipsum';
+        self::assertEquals(true, $array->noset('ipsum'));
+    }
+
     public function test_empty_should_return_false()
     {
         $array = new Arrays();
@@ -114,6 +144,20 @@ class ArraysTest extends TestCase
         $array = new Arrays();
         $array['Lorem'] = 'ipsum';
         self::assertEquals(true, $array->empty('ipsum'));
+    }
+
+    public function test_filled_should_return_true()
+    {
+        $array = new Arrays();
+        $array['Lorem'] = 'ipsum';
+        self::assertEquals(true, $array->filled('Lorem'));
+    }
+
+    public function test_filled_should_return_false()
+    {
+        $array = new Arrays();
+        $array['Lorem'] = 'ipsum';
+        self::assertEquals(false, $array->filled('ipsum'));
     }
 
     public function test_unset_key()

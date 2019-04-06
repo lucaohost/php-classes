@@ -139,7 +139,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     }
 
     /**
-     * Determine if a variable is set and is not null
+     * Determine if a key is set and it's value is not null
      *
      * @param  mixed $key
      *
@@ -148,6 +148,18 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     public function isset($key): bool
     {
         return isset($this->content[$key]);
+    }
+
+    /**
+     * Determine if a key is not set
+     *
+     * @param  mixed $key
+     *
+     * @return bool
+     */
+    public function noset($key): bool
+    {
+        return !isset($this->content[$key]);
     }
 
     /**
@@ -160,6 +172,18 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     public function empty($key): bool
     {
         return empty($this->content[$key]);
+    }
+
+    /**
+     * Determine wheter a variable is not empty
+     *
+     * @param  mixed $key
+     *
+     * @return bool
+     */
+    public function filled($key): bool
+    {
+        return !empty($this->content[$key]);
     }
 
     /**
@@ -242,13 +266,22 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         return $this;
     }
 
-    public function get(): array
+    public function get(...$keys)
     {
-        $array = [];
-        foreach ($this->content as $key => $content) {
-            $array[$key] = Arrays::instanceOf($content) ? $content->get() : $content;
+        $ret = [];
+        $keys = new self($keys);
+        if (($c = $keys->count()) > 0) {
+            $ret = $this->content[$keys[0]] ?? null;
+            for ($i = 1; $i < $c; $i++) {
+                $ret = $ret[$keys[$i]] ?? null;
+            }
+            $ret = self::isArray($ret) ? new self($ret) : $ret;
+        } else {
+            foreach ($this->content as $key => $content) {
+                $ret[$key] = Arrays::instanceOf($content) ? $content->get() : $content;
+            }
         }
-        return $array;
+        return $ret;
     }
 
     public function __toString()
