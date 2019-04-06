@@ -75,24 +75,6 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     }
 
     /**
-     * Insert the associative key and values on the final of the array
-     *
-     * @param  mixed $values
-     *
-     * @return self
-     */
-    public function apush(...$values): self
-    {
-        $values = new Arrays($values);
-
-        for ($i = 0; $i < $values->count(); $i++) {
-            $this->content[$values[$i]] = $values[++$i] ?? null;
-        }
-
-        return $this;
-    }
-
-    /**
      * Perform a simplified for loop
      *
      * @param  int     $i
