@@ -2,7 +2,6 @@
 
 namespace Cajudev\Classes\Traits;
 
-use Cajudev\Classes\Util\Type;
 use Cajudev\Classes\Strings;
 use Cajudev\Classes\Arrays;
 
@@ -12,7 +11,7 @@ trait ArrayAccessTrait
     {
         $value = Arrays::isArray($value) ? new Arrays($value) : $value;
 
-        if (Type::isString($key)) {
+        if (Strings::isString($key)) {
             $path = (new Strings($key))->split('.');
             if ($path->count() > 1) {
                 $key = $path[0];
@@ -31,7 +30,7 @@ trait ArrayAccessTrait
 
     public function offsetExists($key)
     {
-        if (Type::isString($key)) {
+        if (Strings::isString($key)) {
             $path = (new Strings($key))->split('.');
 
             if ($path->count() > 1) {
@@ -46,7 +45,7 @@ trait ArrayAccessTrait
 
     public function offsetUnset($key)
     {
-        if (Type::isString($key)) {
+        if (Strings::isString($key)) {
             $path = (new Strings($key))->split('.');
 
             if ($path->count() > 1) {
@@ -62,7 +61,7 @@ trait ArrayAccessTrait
 
     public function &offsetGet($key)
     {
-        if (Type::isString($key)) {
+        if (Strings::isString($key)) {
             $path = (new Strings($key))->split('.');
 
             if ($path->count() > 1) {
