@@ -79,7 +79,7 @@ trait ArrayAccessTrait
 
     public function getNewContent(string $key)
     {
-        $content = $this->content[$key];
+        $content = $this->content[$key] ?? null;
         return Arrays::instanceOf($content) ? $content : new Arrays($content);
     }
 
