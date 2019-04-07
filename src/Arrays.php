@@ -289,6 +289,25 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     {
         return new Arrays(array_values($this->content));
     }
+
+    /**
+     * Return the values from a single column
+     *
+     * @param  mixed $key
+     * @param  mixed $index
+     *
+     * @return self
+     */
+    public function column($key, $index = null): ?self
+    {
+        $ret = [];
+        foreach ($this->content as $content) {
+            if (($var = $content[$key]) !== null) {
+                $ret[] = $var;
+            }
+        }
+        return $ret ? new Arrays($ret) : null;
+    }
     
     /**
      * Split the array into chunks
