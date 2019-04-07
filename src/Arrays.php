@@ -35,6 +35,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     {
         switch (Type::getType($content)) {
             case Type::ARRAY:
+                $this->prepare($content);
                 $this->content = $content;
                 break;
             case Type::OBJECT:
@@ -43,6 +44,22 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         }
 
         return $this;
+    }
+
+    /**
+     * Convert all arrays to Arrays objects
+     *
+     * @param  mixed $array
+     *
+     * @return void
+     */
+    private function prepare(array &$array)
+    {
+        foreach ($array as $key => $value) {
+            if (Arrays::isArray($value)) {
+                $array[$key] = new Arrays($value);
+            }
+        }
     }
 
     /**
@@ -59,6 +76,19 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
             $key = new Strings($key);
             return $key->xreplace('/.*\0(.*)/', '\1')->get();
         })->get();
+    }
+
+    /**
+     * Insert the values on the beginning of the array
+     *
+     * @param  mixed $values
+     *
+     * @return self
+     */
+    public function unshift(...$values): self
+    {
+        array_unshift($this->content, ...$values);
+        return $this;
     }
 
     /**
@@ -216,6 +246,17 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     public function shift(): self
     {
         array_shift($this->content);
+        return $this;
+    }
+
+    /**
+     * Remove the last element from an array
+     *
+     * @return self
+     */
+    public function pop(): self
+    {
+        array_pop($this->content);
         return $this;
     }
 
