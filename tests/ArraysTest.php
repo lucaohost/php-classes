@@ -48,6 +48,30 @@ class ArraysTest extends TestCase
         self::assertEquals($expect, $arrays->get());
     }
 
+    public function test_unshifting_several_values()
+    {
+        $arrays = new Arrays('ipsum', 2222);
+        $arrays->unshift('lorem', ['amet' => 'consectetur']);
+        $expect = ['lorem', ['amet' => 'consectetur'], 'ipsum', 2222];
+        self::assertEquals($expect, $arrays->get());
+    }
+
+    public function test_shift()
+    {
+        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays->shift();
+        $expect = ['ipsum', 'dolor'];
+        self::assertEquals($expect, $arrays->get());
+    }
+
+    public function test_pop()
+    {
+        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays->pop();
+        $expect = ['lorem', 'ipsum'];
+        self::assertEquals($expect, $arrays->get());
+    }
+
     public function test_getting_values_using_successive_get()
     {
         $arrays = new Arrays(['lorem' => ['ipsum' => 'dolor'], 'sit' => 'amet']);
