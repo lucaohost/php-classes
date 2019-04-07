@@ -56,8 +56,8 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     private function prepare(array &$array)
     {
         foreach ($array as $key => $value) {
-            if (Arrays::isArray($value)) {
-                $array[$key] = new Arrays($value);
+            if (self::isArray($value)) {
+                $array[$key] = new self($value);
             }
         }
     }
@@ -71,7 +71,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     private function parseObject($object): array
     {
-        $vars = new Arrays((array) $object);
+        $vars = new self((array) $object);
         return $vars->kmap(function($key) {
             $key = new Strings($key);
             return $key->xreplace('/.*\0(.*)/', '\1')->get();
@@ -157,7 +157,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         $keys = $this->keys()->map($handle);
         $values = $this->values();
 
-        $this->content = Arrays::combine($keys, $values)->get();
+        $this->content = self::combine($keys, $values)->get();
         return $this;
     }
 
@@ -174,7 +174,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         $keys = $this->keys()->map($keyHandle);
         $values = $this->values()->map($valueHandle);
 
-        $this->content = Arrays::combine($keys, $values)->get();
+        $this->content = self::combine($keys, $values)->get();
         return $this;
     }
 
@@ -277,7 +277,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function keys(): self
     {
-        return new Arrays(array_keys($this->content));
+        return new self(array_keys($this->content));
     }
 
     /**
@@ -287,7 +287,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function values(): self
     {
-        return new Arrays(array_values($this->content));
+        return new self(array_values($this->content));
     }
 
     /**
@@ -306,7 +306,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
                 $ret[] = $var;
             }
         }
-        return $ret ? new Arrays($ret) : null;
+        return $ret ? new self($ret) : null;
     }
     
     /**
@@ -376,7 +376,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
             $ret = self::isArray($ret) ? new self($ret) : $ret;
         } else {
             foreach ($this->content as $key => $content) {
-                $ret[$key] = Arrays::instanceOf($content) ? $content->get() : $content;
+                $ret[$key] = self::instanceOf($content) ? $content->get() : $content;
             }
         }
         return $ret;
@@ -411,9 +411,9 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public static function combine($keys, $values): self
     {
-        $keys   = Arrays::instanceOf($keys)   ? $keys->get()   : $keys;
-        $values = Arrays::instanceOf($values) ? $values->get() : $values;
+        $keys   = self::instanceOf($keys)   ? $keys->get()   : $keys;
+        $values = self::instanceOf($values) ? $values->get() : $values;
         
-        return new Arrays(array_combine($keys, $values));
+        return new self(array_combine($keys, $values));
     }
 }
