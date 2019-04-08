@@ -277,7 +277,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function column($key, $index = null): ?self
     {
-        return self(array_column($this->content, $key));
+        return new self(array_column($this->content, $key));
     }
     
     /**
