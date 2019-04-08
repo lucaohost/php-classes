@@ -19,14 +19,6 @@ class ArraysTest extends TestCase
         self::assertEquals($regularArray, $arrays->get());
     }
 
-    public function test_creating_from_list_of_values()
-    {
-        $stdClass = new StdClass;
-        $arrays = new Arrays('one', 2, ['three' => 3], $stdClass);
-        $expect = ['one', 2, ['three' => 3], $stdClass];
-        self::assertEquals($expect, $arrays->get());
-    }
-
     public function test_creating_from_object()
     {
         $object = new class {
@@ -50,7 +42,7 @@ class ArraysTest extends TestCase
 
     public function test_unshifting_several_values()
     {
-        $arrays = new Arrays('ipsum', 2222);
+        $arrays = new Arrays(['ipsum', 2222]);
         $arrays->unshift('lorem', ['amet' => 'consectetur']);
         $expect = ['lorem', ['amet' => 'consectetur'], 'ipsum', 2222];
         self::assertEquals($expect, $arrays->get());
@@ -58,7 +50,7 @@ class ArraysTest extends TestCase
 
     public function test_shift()
     {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor']);
         $arrays->shift();
         $expect = ['ipsum', 'dolor'];
         self::assertEquals($expect, $arrays->get());
@@ -66,7 +58,7 @@ class ArraysTest extends TestCase
 
     public function test_pop()
     {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor']);
         $arrays->pop();
         $expect = ['lorem', 'ipsum'];
         self::assertEquals($expect, $arrays->get());
@@ -119,7 +111,6 @@ class ArraysTest extends TestCase
         $arrays['lorem.ipsum.dolor'][] = 'consectetur';
         $arrays['lorem.ipsum.dolor'][] = ['sit' => 'amet'];
         $arrays['lorem.ipsum'][] = $arrays['lorem.ipsum.dolor'];
-
 
         $expect['lorem']['ipsum']['dolor']['sit'] = 'amet';
         $expect['lorem']['ipsum']['dolor'][] = 'consectetur';
@@ -247,22 +238,6 @@ class ArraysTest extends TestCase
         self::assertEquals(false, $array->filled('lorem.ipsum'));
     }
 
-    public function test_unset_key()
-    {
-        $array = new Arrays();
-        $array['lorem'] = 'ipsum';
-        $array->unset('lorem');
-        self::assertEquals(false, $array->isset('lorem'));
-    }
-
-    public function test_unset_key_using_function()
-    {
-        $array = new Arrays();
-        $array['lorem'] = 'ipsum';
-        unset($array['lorem']);
-        self::assertEquals(false, $array->isset('lorem'));
-    }
-
     public function test_unset_key_using_dot_notation()
     {
         $array = new Arrays();
@@ -281,7 +256,7 @@ class ArraysTest extends TestCase
 
     public function test_iterating_array_foreach()
     {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor', 'sit');
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor', 'sit']);
         foreach ($arrays as $key => $value) {
             self::assertEquals($arrays[$key], $value);
         }
@@ -289,7 +264,7 @@ class ArraysTest extends TestCase
 
     public function test_iterating_using_method_for_forward()
     {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor', 'sit');
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor', 'sit']);
         $arrays->for(0, 1, function($key, $value) use ($arrays) {
             self::assertEquals($arrays[$key], $value);
         });
@@ -297,7 +272,7 @@ class ArraysTest extends TestCase
 
     public function test_iterating_using_method_for_backward()
     {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor', 'sit');
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor', 'sit']);
         $arrays->for($arrays->count(), -1, function($key, $value) use ($arrays) {
             self::assertEquals($arrays[$key], $value);
         });
@@ -305,7 +280,7 @@ class ArraysTest extends TestCase
 
     public function test_map()
     {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor']);
         $arrays->map(function($value) {
             $str = new Strings($value);
             return $str->upper()->get();
@@ -316,26 +291,11 @@ class ArraysTest extends TestCase
 
     public function test_kmap()
     {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor']);
         $arrays->kmap(function($key) {
             return ++$key;
         });
         $expect = [1 => 'lorem', 2 => 'ipsum', 3 => 'dolor'];
-        self::assertEquals($expect, $arrays->get());
-    }
-
-    public function test_fmap()
-    {
-        $arrays = new Arrays('lorem', 'ipsum', 'dolor');
-
-        $arrays->fmap(function($key) {
-            return ++$key;
-        }, function($value) {
-            $str = new Strings($value);
-            return $str->upper()->get();
-        });
-
-        $expect = [1 => 'LOREM', 2 => 'IPSUM', 3 => 'DOLOR'];
         self::assertEquals($expect, $arrays->get());
     }
 
@@ -359,8 +319,8 @@ class ArraysTest extends TestCase
     public function test_combine()
     {
         $arrays = new Arrays();
-        $arrays['KEYS']   = new Arrays('lorem', 'ipsum');
-        $arrays['VALUES'] = new Arrays('dolor', 'amet');
+        $arrays['KEYS']   = new Arrays(['lorem', 'ipsum']);
+        $arrays['VALUES'] = new Arrays(['dolor', 'amet']);
         $arrays = Arrays::combine($arrays['KEYS'], $arrays['VALUES']);
         $expect = ['lorem' => 'dolor', 'ipsum'=> 'amet'];
         self::assertEquals($expect, $arrays->get());
@@ -368,7 +328,7 @@ class ArraysTest extends TestCase
 
     public function test_count()
     {
-        $arrays    = new Arrays(1, 2, 3, 4, 5);
+        $arrays    = new Arrays([1, 2, 3, 4, 5]);
         $arrays[2] = [1, 2, 3];
 
         self::assertEquals(5, $arrays->count());
@@ -377,7 +337,7 @@ class ArraysTest extends TestCase
 
     public function test_last()
     {
-        $arrays = new Arrays(1, 2, 3, 4, 5);
+        $arrays = new Arrays([1, 2, 3, 4, 5]);
         self::assertEquals(5, $arrays->last());
     }
 

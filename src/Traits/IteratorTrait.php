@@ -2,6 +2,8 @@
 
 namespace Cajudev\Classes\Traits;
 
+use Cajudev\Classes\Arrays;
+
 trait IteratorTrait
 {
     /**
@@ -21,6 +23,11 @@ trait IteratorTrait
      */
     public function current()
     {
+        $current = current($this->content);
+        if (self::isArray($current)) {
+            $arrays = new Arrays();
+            return $arrays->setByReference($current);
+        }
         return current($this->content);
     }
 

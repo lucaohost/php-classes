@@ -15,13 +15,9 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     private const BREAK    = 'break';
     private const CONTINUE = 'continue';
 
-    public function __construct(...$content)
+    public function __construct($content = null)
     {
-        if (count($content) == 1) {
-            $this->set($content[0]);
-        } else {
-            $this->content = $content;
-        }
+        $this->set($content);
     }
 
     /**
@@ -35,31 +31,29 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     {
         switch (Type::getType($content)) {
             case Type::ARRAY:
-                $this->prepare($content);
                 $this->content = $content;
                 break;
             case Type::OBJECT:
                 $this->content = $this->parseObject($content);
                 break;
+            default:
+                $this->content = [];
         }
 
         return $this;
     }
 
     /**
-     * Convert all arrays to Arrays objects
+     * Set the content of the array by reference
      *
-     * @param  mixed $array
+     * @param  array $array
      *
-     * @return void
+     * @return self
      */
-    private function prepare(array &$array)
+    public function setByReference(array &$array): self
     {
-        foreach ($array as $key => $value) {
-            if (self::isArray($value)) {
-                $array[$key] = new self($value);
-            }
-        }
+        $this->content =& $array;
+        return $this;
     }
 
     /**
@@ -117,7 +111,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     {
         $keys   = $this->keys();
         $values = $this->values();
-        $count  = $values->count();
+        $count  = $this->countOne();
 
         for ($i; ($add >= 0 ? $i < $count : $i >= 0); $i += $add) {
             $return = $function($keys[$i], $values[$i]);
@@ -156,23 +150,6 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     {
         $keys = $this->keys()->map($handle);
         $values = $this->values();
-
-        $this->content = self::combine($keys, $values)->get();
-        return $this;
-    }
-
-    /**
-     * Applies the callback to both, keys and values
-     *
-     * @param  callable $keyHandle
-     * @param  callable $valueHandle
-     *
-     * @return self
-     */
-    public function fmap(callable $keyHandle, callable $valueHandle): self
-    {
-        $keys = $this->keys()->map($keyHandle);
-        $values = $this->values()->map($valueHandle);
 
         $this->content = self::combine($keys, $values)->get();
         return $this;
@@ -300,13 +277,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function column($key, $index = null): ?self
     {
-        $ret = [];
-        foreach ($this->content as $content) {
-            if (($var = $content[$key]) !== null) {
-                $ret[] = $var;
-            }
-        }
-        return $ret ? new self($ret) : null;
+        return self(array_column($this->content, $key));
     }
     
     /**
@@ -366,20 +337,15 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
      */
     public function get(...$keys)
     {
-        $ret = [];
-        $keys = new self($keys);
-        if (($c = $keys->count()) > 0) {
-            $ret = $this->content[$keys[0]] ?? null;
-            for ($i = 1; $i < $c; $i++) {
-                $ret = $ret[$keys[$i]] ?? null;
-            }
-            $ret = self::isArray($ret) ? new self($ret) : $ret;
-        } else {
-            foreach ($this->content as $key => $content) {
-                $ret[$key] = self::instanceOf($content) ? $content->get() : $content;
-            }
+        if (!$keys) {
+            return $this->content;
         }
-        return $ret;
+
+        $array = [];
+        foreach ($keys as $key) {
+            $array = $array ? $array->offsetGet($key) : $this->offsetGet($key);
+        }
+        return $array;
     }
 
     public function __toString()

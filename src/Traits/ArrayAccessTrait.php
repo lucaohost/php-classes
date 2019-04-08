@@ -7,83 +7,164 @@ use Cajudev\Classes\Arrays;
 
 trait ArrayAccessTrait
 {
+    /**
+     * Set a value in array
+     *
+     * @param  mixed $key
+     * @param  mixed $value
+     *
+     * @return void
+     */
     public function offsetSet($key, $value)
     {
-        $value = Arrays::isArray($value) ? new Arrays($value) : $value;
-
-        if (Strings::isString($key)) {
-            $path = (new Strings($key))->split('.');
-            if ($path->count() > 1) {
-                $key = $path[0];
-                $this->content[$key] = new Arrays();
-                $newPath = $path->shift()->join('.')->get();
-                return $this->content[$key][$newPath] = $value;
-            }
+        if (Arrays::instanceOf($value)) {
+            $value = $value->get();
         }
 
         if ($key === null) {
             return $this->content[] = $value;
         }
-        
-        $this->content[$key] = $value;
+
+        $path = (new Strings($key))->split('.');
+        $this->recursiveOffsetSet($this->content, $path->get(), $value);
     }
 
-    public function offsetExists($key)
-    {
-        if (Strings::isString($key)) {
-            $path = (new Strings($key))->split('.');
+    /**
+     * Set value in array recursively when using dot notation
+     *
+     * @param  mixed $array
+     * @param  mixed $keys
+     * @param  mixed $value
+     * @param  mixed $i
+     *
+     * @return void
+     */
+    private function recursiveOffsetSet(&$array, $keys, $value, $i = 0) {
+        if (empty($keys[$i + 1])) {
+            return $array[$keys[$i]] = $value;
+        } 
+        $newArray =& $array[$keys[$i]];
+        $this->recursiveOffsetSet($newArray, $keys, $value, ++$i);   
+    }
 
-            if ($path->count() > 1) {
-                $content = $this->getNewContent($path[0]);
-                $key     = $this->getNewKey($path);
-                return isset($content[$key]);
-            }
+    /**
+     * Check if a key is set
+     *
+     * @param  mixed $key
+     *
+     * @return bool
+     */
+    public function offsetExists($key): bool
+    {
+        $path = (new Strings($key))->split('.');
+
+        if ($path->count() > 1) {
+            return $this->recursiveOffsetExists($this->content, $path->get());
         }
 
         return isset($this->content[$key]);
     }
 
+    /**
+     * Check if a key is set recursively when using dot notation
+     *
+     * @param  mixed $array
+     * @param  mixed $keys
+     * @param  mixed $i
+     *
+     * @return bool
+     */
+    private function recursiveOffsetExists(&$array, $keys, $i = 0): bool
+    {
+        if (empty($keys[$i + 1])) {
+            return isset($array[$keys[$i]]);
+        }
+
+        $newArray =& $array[$keys[$i]];
+        return $this->recursiveOffsetExists($newArray, $keys, ++$i);
+    }
+
+    /**
+     * Unset a value in array
+     *
+     * @param  mixed $key
+     *
+     * @return void
+     */
     public function offsetUnset($key)
     {
-        if (Strings::isString($key)) {
-            $path = (new Strings($key))->split('.');
+        $path = (new Strings($key))->split('.');
 
-            if ($path->count() > 1) {
-                $content = $this->getNewContent($path[0]);
-                $key     = $this->getNewKey($path);
-                unset($content[$key]);
-                return;
-            }
+        if ($path->count() > 1) {
+            $this->recursiveOffsetUnset($this->content, $path->get());
+        } else {
+            unset($this->content[$key]);
         }
-
-        unset($this->content[$key]);
     }
 
+    /**
+     * Unset a value in array recursively when using dot notation
+     *
+     * @param  mixed $array
+     * @param  mixed $keys
+     * @param  mixed $i
+     *
+     * @return void
+     */
+    private function recursiveOffsetUnset(&$array, $keys, $i = 0)
+    {
+        if (empty($keys[$i + 1])) {
+            unset($array[$keys[$i]]);
+        } else {
+            $newArray =& $array[$keys[$i]];
+            $this->recursiveOffsetUnset($newArray, $keys, ++$i);
+        }
+    }
+
+    /**
+     * Get a value from the array
+     *
+     * @param  mixed $key
+     *
+     * @return mixed
+     */
     public function &offsetGet($key)
     {
-        if (Strings::isString($key)) {
-            $path = (new Strings($key))->split('.');
+        $path = (new Strings((string)$key))->split('.');
 
-            if ($path->count() > 1) {
-                $content = $this->getNewContent($path[0]);
-                $key     = $this->getNewKey($path);
-                return $content[$key];
-            }
+        if ($path->count() > 1) {
+            $return = $this->recursiveOffsetGet($this->content, $path->get());
+            return $return;
+        }
+        
+        $content =& $this->content[$key];
+        
+        if (Arrays::isArray($content)) {
+            $return = new Arrays();
+            $return->setByReference($content);
+            return $return;
         }
 
-        $ret =& $this->content[$key];
-        $ret = Arrays::isArray($ret) ? new Arrays($ret) : $ret;
-        return $ret;
+        return $content;
     }
 
-    public function getNewContent(string $key)
-    {
-        $content = $this->content[$key] ?? null;
-        return Arrays::instanceOf($content) ? $content : new Arrays($content);
-    }
+    /**
+     * Get a value from the array recursively when using dot notation
+     *
+     * @param  mixed $array
+     * @param  mixed $keys
+     * @param  mixed $i
+     *
+     * @return mixed
+     */
 
-    public function getNewKey(Arrays $path): string
+    private function recursiveOffsetGet(&$array, $keys, $i = 0)
     {
-        return $path->shift()->join('.')->get();
+        if (empty($keys[$i])) {
+            $return = new Arrays();
+            return Arrays::isArray($array) ? $return->setByReference($array) : $array;
+        }
+        $newArray =& $array[$keys[$i]];
+        return $this->recursiveOffsetGet($newArray, $keys, ++$i);
     }
 }
