@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Cajudev\Classes\Util\Type;
+use Cajudev\Util\Type;
 
 class TypeTest extends TestCase
 {

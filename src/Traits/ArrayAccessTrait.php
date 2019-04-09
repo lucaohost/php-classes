@@ -1,9 +1,9 @@
 <?php
 
-namespace Cajudev\Classes\Traits;
+namespace Cajudev\Traits;
 
-use Cajudev\Classes\Strings;
-use Cajudev\Classes\Arrays;
+use Cajudev\Strings;
+use Cajudev\Arrays;
 
 trait ArrayAccessTrait
 {

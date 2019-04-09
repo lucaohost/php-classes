@@ -1,6 +1,6 @@
 <?php
 
-namespace Cajudev\Classes\Traits;
+namespace Cajudev\Traits;
 
 trait CountableTrait
 {

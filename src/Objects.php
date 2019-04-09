@@ -1,6 +1,6 @@
 <?php
 
-namespace Cajudev\Classes;
+namespace Cajudev;
 
 class Objects
 {

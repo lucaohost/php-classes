@@ -1,16 +1,16 @@
 <?php
 
-namespace Cajudev\Classes;
+namespace Cajudev;
 
-use Cajudev\Classes\Util\Type;
-use Cajudev\Classes\Util\Json;
-use Cajudev\Classes\Exceptions\MalformedException;
+use Cajudev\Util\Type;
+use Cajudev\Util\Json;
+use Cajudev\Exceptions\MalformedException;
 
 class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
 {
-    use \Cajudev\Classes\Traits\ArrayAccessTrait;
-    use \Cajudev\Classes\Traits\IteratorTrait;
-    use \Cajudev\Classes\Traits\CountableTrait;
+    use \Cajudev\Traits\ArrayAccessTrait;
+    use \Cajudev\Traits\IteratorTrait;
+    use \Cajudev\Traits\CountableTrait;
 
     private const BREAK    = 'break';
     private const CONTINUE = 'continue';

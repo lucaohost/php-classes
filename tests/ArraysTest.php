@@ -1,8 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Cajudev\Classes\Arrays;
-use Cajudev\Classes\Strings;
+use Cajudev\Arrays;
+use Cajudev\Strings;
 
 class ArraysTest extends TestCase
 {

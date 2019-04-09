@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Cajudev\Classes\Strings;
+use Cajudev\Strings;
 
 class StringsTest extends TestCase
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Cajudev\Classes;
+namespace Cajudev;
 
-use Cajudev\Classes\Arrays;
-use Cajudev\Classes\Regexs;
-use Cajudev\Classes\Util\Type;
+use Cajudev\Arrays;
+use Cajudev\Regexs;
+use Cajudev\Util\Type;
 
 class Strings extends Objects
 {

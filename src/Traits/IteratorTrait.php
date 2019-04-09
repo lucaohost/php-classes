@@ -1,8 +1,8 @@
 <?php
 
-namespace Cajudev\Classes\Traits;
+namespace Cajudev\Traits;
 
-use Cajudev\Classes\Arrays;
+use Cajudev\Arrays;
 
 trait IteratorTrait
 {
