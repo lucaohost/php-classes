@@ -21,7 +21,7 @@ trait CountableTrait
      *
      * @return int
      */
-    public function countOne(int $mode = COUNT_NORMAL): int
+    public function countOnce(int $mode = COUNT_NORMAL): int
     {
         if ($this->length === null) {
             $this->length = count($this->content, $mode);

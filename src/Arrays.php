@@ -111,7 +111,7 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
     {
         $keys   = $this->keys();
         $values = $this->values();
-        $count  = $this->countOne();
+        $count  = $this->countOnce();
 
         for ($i; ($add >= 0 ? $i < $count : $i >= 0); $i += $add) {
             $return = $function($keys[$i], $values[$i]);
