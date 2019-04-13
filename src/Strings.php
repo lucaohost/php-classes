@@ -142,6 +142,6 @@ class Strings extends Objects
     /* ============== STATIC METHODS ============== */
 
     public static function isString($mixed) {
-        return Type::isString($mixed);
+        return is_string($mixed);
     }
 }

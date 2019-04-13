@@ -26,7 +26,7 @@ class ArraysTest extends TestCase
             public    $public = 'ipsum';
             protected $protected = 'dolor';
         };
-        $arrays = new Arrays($object);
+        $arrays = Arrays::fromObject($object);
         $expect = ['private' => 'lorem', 'public' => 'ipsum', 'protected' => 'dolor'];
         self::assertEquals($expect, $arrays->get());
     }
@@ -281,7 +281,7 @@ class ArraysTest extends TestCase
     public function test_iterating_using_method_for_backward()
     {
         $arrays = new Arrays(['lorem', 'ipsum', 'dolor', 'sit']);
-        $arrays->for($arrays->count(), -1, function($key, $value) use ($arrays) {
+        $arrays->for($arrays->count() - 1, -1, function($key, $value) use ($arrays) {
             self::assertEquals($arrays[$key], $value);
         });
     }
@@ -289,19 +289,18 @@ class ArraysTest extends TestCase
     public function test_map()
     {
         $arrays = new Arrays(['lorem', 'ipsum', 'dolor']);
-        $arrays->map(function($value) {
-            $str = new Strings($value);
-            return $str->upper()->get();
+        $arrays->map(function($key, $value) {
+            return [$key, strtoupper($value)];
         });
         $expect = ['LOREM', 'IPSUM', 'DOLOR'];
         self::assertEquals($expect, $arrays->get());
     }
 
-    public function test_kmap()
+    public function test_map_only_key()
     {
         $arrays = new Arrays(['lorem', 'ipsum', 'dolor']);
-        $arrays->kmap(function($key) {
-            return ++$key;
+        $arrays->map(function($key, $value) {
+            return [++$key, $value];
         });
         $expect = [1 => 'lorem', 2 => 'ipsum', 3 => 'dolor'];
         self::assertEquals($expect, $arrays->get());

@@ -25,12 +25,4 @@ class Type
     {
         return gettype($mixed);
     }
-
-    public static function isArray($mixed) {
-        return is_array($mixed);
-    }
-
-    public static function isString($mixed) {
-        return is_string($mixed);
-    }
 }

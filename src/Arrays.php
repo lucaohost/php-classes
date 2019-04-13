@@ -17,30 +17,7 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
 
     public function __construct($content = null)
     {
-        $this->set($content);
-    }
-
-    /**
-     * Set the content of the array
-     *
-     * @param  mixed $content
-     *
-     * @return self
-     */
-    public function set($content): self
-    {
-        switch (Type::getType($content)) {
-            case Type::ARRAY:
-                $this->content = $content;
-                break;
-            case Type::OBJECT:
-                $this->content = $this->parseObject($content);
-                break;
-            default:
-                $this->content = [];
-        }
-
-        return $this;
+        $this->content = is_array($content) ? $content : [];
     }
 
     /**
@@ -54,22 +31,6 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     {
         $this->content =& $array;
         return $this;
-    }
-
-    /**
-     * Transform all properties of a object into an associative array
-     *
-     * @param  Object $object
-     *
-     * @return array
-     */
-    private function parseObject($object): array
-    {
-        $vars = new self((array) $object);
-        return $vars->kmap(function($key) {
-            $key = new Strings($key);
-            return $key->xreplace('/.*\0(.*)/', '\1')->get();
-        })->get();
     }
 
     /**
@@ -109,13 +70,11 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
      */
     public function for(int $i, int $add, \Closure $function)
     {
-        $keys   = $this->keys();
-        $values = $this->values();
-        $count  = $this->countOnce();
+        $keys   = array_keys($this->content);
+        $count  = count($this->content);
 
         for ($i; ($add >= 0 ? $i < $count : $i >= 0); $i += $add) {
-            $return = $function($keys[$i], $values[$i]);
-
+            $return = $function($keys[$i], $this->content[$keys[$i]]);
             switch ($return) {
                 case self::BREAK: break 2;
                 case self::CONTINUE; continue 2;
@@ -150,26 +109,8 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
      */
     public function map(callable $handle): self
     {
-        $this->content = array_map(function($var) use($handle) {  
-            return $handle($var);
-        }, $this->content);
-
-        return $this;
-    }
-
-    /**
-     * Applies the callback to all keys
-     *
-     * @param  callable $handle
-     *
-     * @return self
-     */
-    public function kmap(callable $handle): self
-    {
-        $keys = $this->keys()->map($handle);
-        $values = $this->values();
-
-        $this->content = self::combine($keys, $values)->get();
+        $keys = array_keys($this->content);
+        $this->content = array_column(array_map($handle, $keys, $this->content), 1, 0);
         return $this;
     }
 
@@ -382,7 +323,26 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
      */
     public static function isArray($array): bool
     {
-        return Type::isArray($array);
+        return is_array($array);
+    }
+
+    /**
+     * Transform all properties of a object into an associative array
+     *
+     * @param  $object
+     *
+     * @return self
+     */
+    public static function fromObject($object): self
+    {
+        if (!is_object($object)) {
+            return false;
+        }
+
+        $vars = new self((array) $object);
+        return $vars->map(function($key, $value) {
+            return [preg_replace('/.*\0(.*)/', '\1', $key), $value];
+        });
     }
 
     /**
@@ -395,8 +355,13 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
      */
     public static function combine($keys, $values): self
     {
-        $keys   = self::instanceOf($keys)   ? $keys->get()   : $keys;
-        $values = self::instanceOf($values) ? $values->get() : $values;
+        if ($keys instanceof self) {
+            $keys = $keys->get();
+        }
+
+        if ($values instanceof self) {
+            $values = $values->get();
+        }
         
         return new self(array_combine($keys, $values));
     }
