@@ -8,28 +8,6 @@ class ArraysTest extends TestCase
 {
     public function test_creating_object() 
     {
-        $arrays = new Arrays([0, 1, 2, 3, 4, 5]);
-
-        $arrays->each(function($key, $value) {
-            if ($value > 2) {
-                return 'break';
-            }
-            echo $value . ' ';    // 0 1 2
-        });
-    
-        $arrays->each(function($key, $value) {
-            if ($value == 2) {
-                return 'continue';
-            }
-            echo $value . ' ';   // 0 1 3 4 5
-        });
-
-        exit;
-        
-        // funciona // Imprimindo todo o objeto exit;
-
-
-
         $arrays = new Arrays();
         self::assertInstanceOf(Arrays::class, $arrays);
     }
