@@ -13,19 +13,7 @@ trait CountableTrait
      */
     public function count(int $mode = COUNT_NORMAL): int
     {
-        return count($this->content, $mode);
-    }
-
-        /**
-     * Count all elements of the array
-     *
-     * @return int
-     */
-    public function countOnce(int $mode = COUNT_NORMAL): int
-    {
-        if ($this->length === null) {
-            $this->length = count($this->content, $mode);
-        }
+        $this->length = count($this->content, $mode);
         return $this->length;
     }
 }

@@ -22,11 +22,13 @@ trait ArrayAccessTrait
         }
 
         if ($key === null) {
-            return $this->content[] = $value;
+            $this->content[] = $value;
+        } else {
+            $path = (new Strings($key))->split('.');
+            $this->recursiveOffsetSet($this->content, $path->get(), $value);
         }
 
-        $path = (new Strings($key))->split('.');
-        $this->recursiveOffsetSet($this->content, $path->get(), $value);
+        $this->increment();
     }
 
     /**
@@ -100,6 +102,8 @@ trait ArrayAccessTrait
         } else {
             unset($this->content[$key]);
         }
+
+        $this->decrement();
     }
 
     /**

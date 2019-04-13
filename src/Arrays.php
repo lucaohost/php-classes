@@ -15,9 +15,12 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     private const BREAK    = 'break';
     private const CONTINUE = 'continue';
 
-    public function __construct($content = null)
+    private $length;
+
+    public function __construct(array $content = [])
     {
-        $this->content = is_array($content) ? $content : [];
+        $this->content = $content;
+        $this->count();
     }
 
     /**
@@ -30,6 +33,7 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     public function setByReference(array &$array): self
     {
         $this->content =& $array;
+        $this->count();
         return $this;
     }
 
@@ -43,6 +47,7 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     public function unshift(...$values): self
     {
         array_unshift($this->content, ...$values);
+        $this->increment(count($values));
         return $this;
     }
 
@@ -56,6 +61,7 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     public function push(...$values): self
     {
         array_push($this->content, ...$values);
+        $this->increment(count($values));
         return $this;
     }
 
@@ -182,6 +188,7 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     public function shift(): self
     {
         array_shift($this->content);
+        $this->decrement();
         return $this;
     }
 
@@ -193,6 +200,7 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     public function pop(): self
     {
         array_pop($this->content);
+        $this->decrement();
         return $this;
     }
 
@@ -250,6 +258,7 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
     public function chunk(int $size, bool $preserve_keys = false): self
     {
         $this->content = array_chunk($this->content, $size, $preserve_keys);
+        $this->count();
         return $this;
     }
 
@@ -305,6 +314,30 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
             $array = $array ? $array->offsetGet($key) : $this->offsetGet($key);
         }
         return $array;
+    }
+
+    /**
+     * Increment the length property
+     *
+     * @return void
+     */
+    private function increment(int $value = 1) {
+        $this->length += $value;
+    }
+
+    /**
+     * Decrement the length property
+     *
+     * @return void
+     */
+    private function decrement(int $value = 1) {
+        $this->length -= $value;
+    }
+
+    public function __get($property) {
+        if ($property == 'length') {
+            return $this->length;
+        }
     }
 
     public function __toString()

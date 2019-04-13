@@ -8,6 +8,28 @@ class ArraysTest extends TestCase
 {
     public function test_creating_object() 
     {
+        $arrays = new Arrays([0, 1, 2, 3, 4, 5]);
+
+        $arrays->each(function($key, $value) {
+            if ($value > 2) {
+                return 'break';
+            }
+            echo $value . ' ';    // 0 1 2
+        });
+    
+        $arrays->each(function($key, $value) {
+            if ($value == 2) {
+                return 'continue';
+            }
+            echo $value . ' ';   // 0 1 3 4 5
+        });
+
+        exit;
+        
+        // funciona // Imprimindo todo o objeto exit;
+
+
+
         $arrays = new Arrays();
         self::assertInstanceOf(Arrays::class, $arrays);
     }
@@ -364,5 +386,20 @@ class ArraysTest extends TestCase
         $arrays = new Arrays(['lorem' => 1, 'Ipsum' => 2]);
         $expect = '{"lorem":1,"Ipsum":2}';
         self::assertEquals($expect, $arrays);
+    }
+
+    public function test_length_property()
+    {
+        $arrays = new Arrays([1, 2, 3, 4, 5, 6]); //6
+        unset($arrays[0]); //5
+        $arrays->unset(1); //4
+        $arrays['lorem.ipsum'] = ['lorem' => 'ipsum']; //5
+        $arrays[] = 'dolor'; //6
+        $arrays->push(1, 2, 3); //9
+        $arrays->shift(); //8
+        $arrays->unshift(4, 5, 6); //11
+        $arrays->pop(); //10
+        $arrays->chunk(2); //5
+        self::assertEquals(5, $arrays->length);
     }
 }
