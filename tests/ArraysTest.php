@@ -262,6 +262,14 @@ class ArraysTest extends TestCase
         }
     }
 
+    public function test_iterating_array_each()
+    {
+        $arrays = new Arrays(['lorem', 'ipsum', 'dolor', 'sit']);
+        $arrays->each(function($key, $value) use ($arrays) {
+            self::assertEquals($arrays[$key], $value);
+        });
+    }
+
     public function test_iterating_using_method_for_forward()
     {
         $arrays = new Arrays(['lorem', 'ipsum', 'dolor', 'sit']);

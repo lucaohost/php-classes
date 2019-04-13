@@ -6,7 +6,7 @@ use Cajudev\Util\Type;
 use Cajudev\Util\Json;
 use Cajudev\Exceptions\MalformedException;
 
-class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
+final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
 {
     use \Cajudev\Traits\ArrayAccessTrait;
     use \Cajudev\Traits\IteratorTrait;
@@ -116,6 +116,24 @@ class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
         for ($i; ($add >= 0 ? $i < $count : $i >= 0); $i += $add) {
             $return = $function($keys[$i], $values[$i]);
 
+            switch ($return) {
+                case self::BREAK: break 2;
+                case self::CONTINUE; continue 2;
+            }
+        }
+    }
+
+    /**
+     * Perform a foreach loop
+     *
+     * @param  Closure $function
+     *
+     * @return void
+     */
+    public function each(\Closure $function)
+    {
+        foreach ($this->content as $key => $value) {
+            $return = $function($key, $value);
             switch ($return) {
                 case self::BREAK: break 2;
                 case self::CONTINUE; continue 2;
