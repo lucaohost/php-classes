@@ -4,13 +4,15 @@ namespace Cajudev;
 
 use Cajudev\Util\Type;
 use Cajudev\Util\Json;
+use Cajudev\Interfaces\Sortable;
 use Cajudev\Exceptions\MalformedException;
 
-final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable
+final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countable, Sortable
 {
     use \Cajudev\Traits\ArrayAccessTrait;
     use \Cajudev\Traits\IteratorTrait;
     use \Cajudev\Traits\CountableTrait;
+    use \Cajudev\Traits\SortableTrait;
 
     private const BREAK    = 'break';
     private const CONTINUE = 'continue';
@@ -366,10 +368,10 @@ final class Arrays extends Objects implements \ArrayAccess, \Iterator, \Countabl
      *
      * @return self
      */
-    public static function fromObject($object): self
+    public static function fromObject($object): ?self
     {
         if (!is_object($object)) {
-            return false;
+            return null;
         }
 
         $vars = new self((array) $object);

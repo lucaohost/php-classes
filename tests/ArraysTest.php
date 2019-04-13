@@ -31,6 +31,12 @@ class ArraysTest extends TestCase
         self::assertEquals($expect, $arrays->get());
     }
 
+    public function test_creating_from_object_should_return_false()
+    {
+        $arrays = Arrays::fromObject([1, 2, 3]);
+        self::assertNull($arrays);
+    }
+
     public function test_pushing_several_values()
     {
         $arrays = new Arrays();
@@ -323,6 +329,47 @@ class ArraysTest extends TestCase
         self::assertEquals($expect, $arrays->chunk(2)->get());
     }
 
+    public function test_getting_keys()
+    {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $keys = $arrays->keys();
+        $expect = ['three', 'eight', 'two'];
+        self::assertSame($expect, $keys->get());
+    }
+
+    public function test_getting_values()
+    {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $values = $arrays->values();
+        $expect = [3, 8, 2];
+        self::assertSame($expect, $values->get());
+    }
+
+    public function test_join()
+    {
+        $arrays = new Arrays([1, 2, 3, 4, 5, 6]);
+        $join   = $arrays->join('|');
+        $expect = '1|2|3|4|5|6';
+        self::assertEquals($expect, $join->get());
+    }
+
+    public function test_column()
+    {
+        $arrays = new Arrays([
+            'lorem1' => [
+                'ipsum' => 'dolor1',
+                'sit'   => 'amet1'
+            ],
+            'lorem2' => [
+                'ipsum' => 'dolor2',
+                'sit'   => 'amet2'
+            ]
+        ]);
+        $column   = $arrays->column('ipsum');
+        $expect = ['dolor1', 'dolor2'];
+        self::assertEquals($expect, $column->get());
+    }
+
     public function test_combine()
     {
         $arrays = new Arrays();
@@ -379,5 +426,53 @@ class ArraysTest extends TestCase
         $arrays->pop(); //10
         $arrays->chunk(2); //5
         self::assertEquals(5, $arrays->length);
+    }
+
+    public function test_access_invalid_property_should_return_null()
+    {
+        $arrays = new Arrays();
+        self::assertNull($arrays->lorem);
+    }
+
+    public function test_sort() {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $arrays->sort();
+        $expect = [2, 3, 8];
+        self::assertSame($expect, $arrays->get());
+    }
+
+    public function test_rsort() {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $arrays->rsort();
+        $expect = [8, 3, 2];
+        self::assertSame($expect, $arrays->get());
+    }
+
+    public function test_asort() {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $arrays->asort();
+        $expect = ['two' => 2, 'three' => 3, 'eight' => 8];
+        self::assertSame($expect, $arrays->get());
+    }
+
+    public function test_arsort() {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $arrays->arsort();
+        $expect = ['eight' => 8, 'three' => 3, 'two' => 2];
+        self::assertSame($expect, $arrays->get());
+    }
+
+    public function test_ksort() {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $arrays->ksort();
+        $expect = ['eight' => 8, 'three' => 3, 'two' => 2];
+        self::assertSame($expect, $arrays->get());
+    }
+
+    public function test_krsort() {
+        $arrays = new Arrays(['three' => 3, 'eight' => 8, 'two' => 2]);
+        $arrays->krsort();
+        $expect = ['two' => 2, 'three' => 3, 'eight' => 8];
+        self::assertSame($expect, $arrays->get());
     }
 }
