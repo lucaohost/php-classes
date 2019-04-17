@@ -23,30 +23,19 @@ trait ArrayAccessTrait
 
         if ($key === null) {
             $this->content[] = $value;
+        } elseif (preg_match('/^\w+$/', $key)) {
+            $this->content[$key] = $value;
+        } elseif (preg_match_all('/(?<=\.|^)(?<key>\w+)(?=\.|$)/', $key, $keys)) {
+            $ret =& $this->content;
+            while (count($keys['key']) > 1) {
+                $ret =& $ret[array_shift($keys['key'])];
+            }
+            $ret[$keys['key'][0]] = $value;
         } else {
-            $path = (new Strings($key))->split('.');
-            $this->recursiveOffsetSet($this->content, $path->get(), $value);
+            throw new \InvalidArgumentException('Wrong Pattern');
         }
 
         $this->increment();
-    }
-
-    /**
-     * Set value in array recursively when using dot notation
-     *
-     * @param  mixed $array
-     * @param  mixed $keys
-     * @param  mixed $value
-     * @param  mixed $i
-     *
-     * @return void
-     */
-    private function recursiveOffsetSet(&$array, $keys, $value, $i = 0) {
-        if (empty($keys[$i + 1])) {
-            return $array[$keys[$i]] = $value;
-        } 
-        $newArray =& $array[$keys[$i]];
-        $this->recursiveOffsetSet($newArray, $keys, $value, ++$i);   
     }
 
     /**
@@ -58,32 +47,17 @@ trait ArrayAccessTrait
      */
     public function offsetExists($key): bool
     {
-        $path = (new Strings($key))->split('.');
-
-        if ($path->count() > 1) {
-            return $this->recursiveOffsetExists($this->content, $path->get());
+        if (preg_match('/^\w+$/', $key)) {
+            return isset($this->content[$key]);
+        } elseif (preg_match_all('/(?<=\.|^)(?<key>\w+)(?=\.|$)/', $key, $keys)) {
+            $ret =& $this->content;
+            while (count($keys['key']) > 1) {
+                $ret =& $ret[array_shift($keys['key'])];
+            }
+            return isset($ret[$keys['key'][0]]);
+        } else {
+            throw new \InvalidArgumentException('Wrong Pattern');
         }
-
-        return isset($this->content[$key]);
-    }
-
-    /**
-     * Check if a key is set recursively when using dot notation
-     *
-     * @param  mixed $array
-     * @param  mixed $keys
-     * @param  mixed $i
-     *
-     * @return bool
-     */
-    private function recursiveOffsetExists(&$array, $keys, $i = 0): bool
-    {
-        if (empty($keys[$i + 1])) {
-            return isset($array[$keys[$i]]);
-        }
-
-        $newArray =& $array[$keys[$i]];
-        return $this->recursiveOffsetExists($newArray, $keys, ++$i);
     }
 
     /**
@@ -95,34 +69,19 @@ trait ArrayAccessTrait
      */
     public function offsetUnset($key)
     {
-        $path = (new Strings($key))->split('.');
-
-        if ($path->count() > 1) {
-            $this->recursiveOffsetUnset($this->content, $path->get());
-        } else {
+        if (preg_match('/^\w+$/', $key)) {
             unset($this->content[$key]);
+        } elseif (preg_match_all('/(?<=\.|^)(?<key>\w+)(?=\.|$)/', $key, $keys)) {
+            $ret =& $this->content;
+            while (count($keys['key']) > 1) {
+                $ret =& $ret[array_shift($keys['key'])];
+            }
+            unset($ret[$keys['key'][0]]);
+        } else {
+            throw new \InvalidArgumentException('Wrong Pattern');
         }
 
         $this->decrement();
-    }
-
-    /**
-     * Unset a value in array recursively when using dot notation
-     *
-     * @param  mixed $array
-     * @param  mixed $keys
-     * @param  mixed $i
-     *
-     * @return void
-     */
-    private function recursiveOffsetUnset(&$array, $keys, $i = 0)
-    {
-        if (empty($keys[$i + 1])) {
-            unset($array[$keys[$i]]);
-        } else {
-            $newArray =& $array[$keys[$i]];
-            $this->recursiveOffsetUnset($newArray, $keys, ++$i);
-        }
     }
 
     /**
@@ -134,41 +93,26 @@ trait ArrayAccessTrait
      */
     public function &offsetGet($key)
     {
-        $path = (new Strings((string)$key))->split('.');
-
-        if ($path->count() > 1) {
-            $return = $this->recursiveOffsetGet($this->content, $path->get());
-            return $return;
+        if (preg_match('/^\w+$/', $key)) {
+            $ret =& $this->content[$key];
+        } elseif (preg_match_all('/(?<=\.|^)(?<key>\w+)(?=\.|$)/', $key, $keys)) {
+            $ret =& $this->content;
+            while (count($keys['key']) > 1) {
+                $ret =& $ret[array_shift($keys['key'])];
+            }
+            $ret =& $ret[$keys['key'][0]];
+        } elseif (preg_match('/^(?<offset>\w+):(?<length>\w+)$/', $key, $result)) {
+            $ret = array_slice($this->content, $result['offset'], $result['length'], true);
+        } else {
+            throw new \InvalidArgumentException('Wrong Pattern');
         }
         
-        $content =& $this->content[$key];
-        
-        if (Arrays::isArray($content)) {
+        if (is_array($ret)) {
             $return = new Arrays();
-            $return->setByReference($content);
+            $return->setByReference($ret);
             return $return;
         }
 
-        return $content;
-    }
-
-    /**
-     * Get a value from the array recursively when using dot notation
-     *
-     * @param  mixed $array
-     * @param  mixed $keys
-     * @param  mixed $i
-     *
-     * @return mixed
-     */
-
-    private function recursiveOffsetGet(&$array, $keys, $i = 0)
-    {
-        if (empty($keys[$i])) {
-            $return = new Arrays();
-            return Arrays::isArray($array) ? $return->setByReference($array) : $array;
-        }
-        $newArray =& $array[$keys[$i]];
-        return $this->recursiveOffsetGet($newArray, $keys, ++$i);
+        return $ret;
     }
 }

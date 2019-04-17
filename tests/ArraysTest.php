@@ -126,6 +126,52 @@ class ArraysTest extends TestCase
         self::assertEquals($expect, $arrays->get());
     }
 
+    public function test_interval_notation_index_key()
+    {
+        $arrays = new Arrays([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        $expect = [2, 3, 4, 5, 6, 7];
+        self::assertEquals($expect, $arrays['2:6']->values()->get());
+    }
+
+    public function test_interval_notation_associative_key()
+    {
+        $arrays = new Arrays([
+            'zero'  => 0, 'one'  => 1, 'two' => 2, 'three' => 3,
+            'four'  => 4, 'five' => 5, 'six' => 6, 'seven' => 7,
+            'eight' => 8, 'nine' => 9, 'ten' => 10
+        ]);
+        $expect = ['two'   => 2, 'three' => 3, 'four'  => 4, 'five'  => 5, 'six' => 6];
+        self::assertEquals($expect, $arrays['2:5']->get());
+    }
+
+    public function test_trying_access_using_wrong_pattern()
+    {
+        self::expectException(InvalidArgumentException::class);
+        $arrays = new Arrays();
+        $arrays['3:4:5'];
+    }
+
+    public function test_trying_set_using_wrong_pattern()
+    {
+        self::expectException(InvalidArgumentException::class);
+        $arrays = new Arrays();
+        $arrays['3:4:5'] = 10;
+    }
+
+    public function test_trying_isset_using_wrong_pattern()
+    {
+        self::expectException(InvalidArgumentException::class);
+        $arrays = new Arrays();
+        isset($arrays['3:4:5']);
+    }
+
+    public function test_trying_unset_using_wrong_pattern()
+    {
+        self::expectException(InvalidArgumentException::class);
+        $arrays = new Arrays();
+        unset($arrays['3:4:5']);
+    }
+
     public function test_isset_should_return_true()
     {
         $array = new Arrays();
